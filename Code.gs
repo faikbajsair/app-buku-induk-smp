@@ -197,7 +197,7 @@ function setupDatabase() {
       ['email', 'info@alimamischool.sch.id', 'Email Resmi'],
       ['website', 'https://alimamischool.com', 'Website Resmi'],
       ['logo_url', 'https://alimamischool.com/wp-content/uploads/2020/08/Al-Imam-Islamic-School-alimamischool.com-sekolah-sunnah-logo.png', 'URL Logo Sekolah'],
-      ['headmaster_name', 'Dr. H. Muhammad Zulkarnain, M.Pd.', 'Nama Kepala Sekolah'],
+      ['headmaster_name', 'Arif Rohman, S.Sos., M.Pd.', 'Nama Kepala Sekolah'],
       ['headmaster_nip', '19750812 200003 1 002', 'NIP Kepala Sekolah'],
       ['headmaster_signature_url', '', 'Tanda Tangan Digital Kepala Sekolah'],
       ['tu_admin_name', 'Ahmad Fauzi, S.Kom.', 'Nama Kepala Tata Usaha'],

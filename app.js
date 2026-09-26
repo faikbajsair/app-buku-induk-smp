@@ -28,7 +28,7 @@ const Store = {
     email: 'info@alimamischool.sch.id',
     website: 'https://alimamischool.com',
     logo_url: 'https://alimamischool.com/wp-content/uploads/2020/08/Al-Imam-Islamic-School-alimamischool.com-sekolah-sunnah-logo.png',
-    headmaster_name: 'Dr. H. Muhammad Zulkarnain, M.Pd.',
+    headmaster_name: 'Arif Rohman, S.Sos., M.Pd.',
     headmaster_nip: '19750812 200003 1 002',
     headmaster_signature_url: '',
     tu_admin_name: 'Ahmad Fauzi, S.Kom.',
@@ -267,7 +267,7 @@ const Store = {
     {
       audit_id: 'AUD-1001',
       timestamp: '2025-10-10 09:30:00',
-      auditor_name: 'Dr. H. Muhammad Zulkarnain, M.Pd.',
+      auditor_name: 'Arif Rohman, S.Sos., M.Pd.',
       auditor_role: 'Kepala Sekolah',
       action_type: 'Pemeriksaan Rutin Semester Ganjil',
       notes: 'Buku Induk Peserta Didik Baru Tahun Ajaran 2025/2026 telah terisi lengkap dengan pas foto 3x4 dan data orang tua terverifikasi.',
@@ -319,13 +319,28 @@ const Store = {
           if (!this.config.gas_api_url || !this.config.gas_api_url.includes('AKfycbzzaUtMagfZktlBDKgq')) {
             this.config.gas_api_url = DEFAULT_GAS_URL;
           }
+          if (!this.config.headmaster_name || this.config.headmaster_name.includes('Zulkarnain')) {
+            this.config.headmaster_name = 'Arif Rohman, S.Sos., M.Pd.';
+          }
+          if (!this.config.theme_preset) {
+            this.config.theme_preset = 'soft_green';
+          }
         }
         if (parsed.students && parsed.students.length > 0) this.students = parsed.students;
         if (parsed.grades && parsed.grades.length > 0) this.grades = parsed.grades;
-        if (parsed.audits && parsed.audits.length > 0) this.audits = parsed.audits;
+        if (parsed.audits && parsed.audits.length > 0) {
+          this.audits = parsed.audits.map(a => {
+            if (a.auditor_name && a.auditor_name.includes('Zulkarnain')) {
+              a.auditor_name = 'Arif Rohman, S.Sos., M.Pd.';
+            }
+            return a;
+          });
+        }
         if (parsed.currentRole) this.currentRole = parsed.currentRole;
       } else {
         this.config.gas_api_url = DEFAULT_GAS_URL;
+        this.config.headmaster_name = 'Arif Rohman, S.Sos., M.Pd.';
+        this.config.theme_preset = 'soft_green';
       }
     } catch (e) {
       console.warn('LocalStorage load failed:', e);
