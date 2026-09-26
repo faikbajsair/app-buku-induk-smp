@@ -1097,9 +1097,185 @@ textarea.form-control {
 .sig-name {
   font-weight: bold;
   text-decoration: underline;
+/* Diploma & Document Upload Cards */
+.diploma-upload-card {
+  background: var(--light-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: var(--transition);
 }
 
-/* MEDIA PRINT RULE */
+.diploma-upload-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.diploma-preview-container {
+  width: 100%;
+  height: 180px;
+  background: #FFFFFF;
+  border: 2px dashed var(--secondary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.diploma-preview-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.diploma-preview-container:hover img {
+  transform: scale(1.02);
+}
+
+.diploma-preview-empty {
+  text-align: center;
+  padding: 16px;
+  color: #8C9B90;
+}
+
+.diploma-badge-attached {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.diploma-badge-empty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+/* Certificate & Official Diploma Print Layout */
+.certificate-frame {
+  border: 4px double #2E4036;
+  padding: 18px 22px;
+  position: relative;
+  background: #FFFFFF;
+  min-height: 255mm;
+  box-sizing: border-box;
+}
+
+.certificate-frame::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px solid #88AB8E;
+  pointer-events: none;
+}
+
+.certificate-header {
+  text-align: center;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #2E4036;
+  padding-bottom: 12px;
+}
+
+.certificate-title {
+  font-family: var(--font-heading);
+  font-size: 18pt;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #2E4036;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.certificate-subtitle {
+  font-size: 11pt;
+  font-weight: 600;
+  color: var(--dark-soft);
+  margin-top: 2px;
+}
+
+.diploma-attachment-box {
+  width: 100%;
+  min-height: 145mm;
+  border: 2px dashed #42584C;
+  background: #FAFCFA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  margin: 14px 0;
+  box-sizing: border-box;
+}
+
+.diploma-attachment-box img {
+  max-width: 100%;
+  max-height: 140mm;
+  object-fit: contain;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.diploma-attachment-placeholder {
+  text-align: center;
+  color: #556B5C;
+  padding: 24px;
+}
+
+/* Modal Lightbox for Image Zoom */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.lightbox-overlay.active {
+  display: flex;
+}
+
+.lightbox-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  position: relative;
+  background: #FFFFFF;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+}
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  background: #2E4036;
+}
+
+
 @media print {
   body {
     background: #FFFFFF !important;

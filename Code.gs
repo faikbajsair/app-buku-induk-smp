@@ -231,8 +231,8 @@ function setupDatabase() {
 
   // 4. HISTORIES Sheet
   const historyHeaders = [
-    'student_id', 'prev_school', 'prev_diploma_no', 'accepted_date', 'accepted_class', 'scholarships',
-    'mutation_out_date', 'mutation_out_reason', 'graduation_date', 'graduation_diploma_no', 'exam_number'
+    'student_id', 'prev_school', 'prev_diploma_no', 'prev_diploma_file', 'accepted_date', 'accepted_class', 'scholarships',
+    'mutation_out_date', 'mutation_out_reason', 'graduation_date', 'graduation_diploma_no', 'graduation_diploma_file', 'exam_number'
   ];
   getOrCreateSheet(SHEETS.HISTORIES, historyHeaders);
 
@@ -303,8 +303,8 @@ function seedSampleStudentIfEmpty() {
 
     const historySheet = ss.getSheetByName(SHEETS.HISTORIES);
     const sampleHistory = [
-      sampleId, 'SD Islam Terpadu Nurul Fikri', 'DN-01/D-SD/13/0012345', '2025-07-15', 'VII-A', 'Prestasi Tahfidz Juz 30',
-      '', '', '', '', '25-01-07-001'
+      sampleId, 'SD Islam Terpadu Nurul Fikri', 'DN-01/D-SD/13/0012345', '', '2025-07-15', 'VII-A', 'Prestasi Tahfidz Juz 30',
+      '', '', '', '', '', '25-01-07-001'
     ];
     historySheet.getRange(2, 1, 1, sampleHistory.length).setValues([sampleHistory]);
   }
@@ -367,7 +367,7 @@ function sheetToObjects(sheet) {
   const results = [];
   const stringKeys = [
     'student_id', 'nis', 'nisn', 'phone', 'father_phone', 'mother_phone', 'guardian_phone',
-    'father_nik', 'mother_nik', 'postal_code', 'prev_diploma_no', 'graduation_diploma_no', 'exam_number',
+    'father_nik', 'mother_nik', 'postal_code', 'prev_diploma_no', 'prev_diploma_file', 'graduation_diploma_no', 'graduation_diploma_file', 'exam_number',
     'audit_id', 'grade_id', 'subject_code', 'npsn', 'nss'
   ];
 
@@ -645,6 +645,7 @@ function saveStudentData(data) {
     studentId,
     h.prev_school || '',
     h.prev_diploma_no || '',
+    h.prev_diploma_file || '',
     h.accepted_date || '',
     h.accepted_class || data.current_class || 'VII-A',
     h.scholarships || '',
@@ -652,6 +653,7 @@ function saveStudentData(data) {
     h.mutation_out_reason || '',
     h.graduation_date || '',
     h.graduation_diploma_no || '',
+    h.graduation_diploma_file || '',
     h.exam_number || ''
   ];
 

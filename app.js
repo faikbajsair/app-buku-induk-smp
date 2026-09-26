@@ -109,6 +109,7 @@ const Store = {
       history: {
         prev_school: 'SDIT Nurul Fikri Jakarta',
         prev_diploma_no: 'DN-01/D-SD/13/0012345',
+        prev_diploma_file: 'https://images.unsplash.com/photo-1589330694653-dad6d3240a2a?w=800&auto=format&fit=crop',
         accepted_date: '2025-07-15',
         accepted_class: 'VII-A',
         scholarships: 'Beasiswa Prestasi Tahfidz Juz 30',
@@ -116,6 +117,7 @@ const Store = {
         mutation_out_reason: '',
         graduation_date: '',
         graduation_diploma_no: '',
+        graduation_diploma_file: '',
         exam_number: '25-01-07-001'
       }
     },
@@ -608,6 +610,21 @@ const App = {
       });
     }
 
+    // Diploma file inputs in Wizard
+    const prevDiplomaInput = document.getElementById('formPrevDiplomaFileInput');
+    if (prevDiplomaInput) {
+      prevDiplomaInput.addEventListener('change', (e) => {
+        Wizard.handlePrevDiplomaUpload(e);
+      });
+    }
+
+    const gradDiplomaInput = document.getElementById('formGraduationDiplomaFileInput');
+    if (gradDiplomaInput) {
+      gradDiplomaInput.addEventListener('change', (e) => {
+        Wizard.handleGradDiplomaUpload(e);
+      });
+    }
+
     const btnDefaultAvatar = document.getElementById('btnPhotoDefaultAvatar');
     if (btnDefaultAvatar) {
       btnDefaultAvatar.addEventListener('click', () => {
@@ -994,8 +1011,11 @@ const App = {
           <td>${statusBadge}</td>
           <td style="text-align: center;">
             <div style="display: flex; gap: 6px; justify-content: center;">
-              <button class="btn btn-sm btn-outline" onclick="App.viewStudentDetail('${s.student_id}')" title="Lihat Detail Biodata">
+              <button class="btn btn-sm btn-outline" onclick="App.viewStudentDetail('${s.student_id}')" title="Lihat Detail Biodata & Ijazah">
                 <i class="fa-solid fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline" onclick="App.openUploadDiplomaModal('${s.student_id}')" title="Upload & Kelola Ijazah" style="color: var(--primary);">
+                <i class="fa-solid fa-file-shield"></i>
               </button>
               ${!isKepsek ? `
                 <button class="btn btn-sm btn-outline" onclick="App.openWizardForEdit('${s.student_id}')" title="Edit Data">
@@ -1005,7 +1025,7 @@ const App = {
                   <i class="fa-solid fa-trash"></i>
                 </button>
               ` : `
-                <button class="btn btn-sm btn-outline" onclick="App.directPrintStudent('${s.student_id}')" title="Cetak Dokumen">
+                <button class="btn btn-sm btn-outline" onclick="App.directPrintStudent('${s.student_id}', 'biodata_siswa')" title="Cetak Dokumen">
                   <i class="fa-solid fa-print"></i>
                 </button>
               `}
@@ -1093,6 +1113,9 @@ const App = {
     const p = student.parent || {};
     const h = student.history || {};
 
+    const prevFile = h.prev_diploma_file;
+    const gradFile = h.graduation_diploma_file;
+
     modalBody.innerHTML = `
       <div style="display: flex; gap: 24px; margin-bottom: 24px; align-items: flex-start;">
         <div class="photo-3x4-box" style="width: 120px; height: 160px; flex-shrink: 0;">
@@ -1103,10 +1126,12 @@ const App = {
           <div style="font-size: 13px; color: var(--dark-soft); margin-top: 4px;">
             NIS: <b>${student.nis || '-'}</b> | NISN: <b>${student.nisn || '-'}</b> | Kelas: <b>${student.current_class}</b>
           </div>
-          <div style="margin-top: 10px; display: flex; gap: 8px;">
+          <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
             <span class="badge ${student.gender === 'L' ? 'badge-info' : 'badge-warning'}">JK: ${student.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
             <span class="badge badge-success">Status: ${student.status}</span>
             <span class="badge badge-secondary">Agama: ${student.religion || 'Islam'}</span>
+            ${prevFile ? '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Ijazah SD Terlampir</span>' : '<span class="badge badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> Ijazah SD Belum Diupload</span>'}
+            ${gradFile ? '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Ijazah SMP Terlampir</span>' : ''}
           </div>
           <p style="font-size: 12.5px; color: var(--dark-soft); margin-top: 12px; line-height: 1.5;">
             <i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> ${student.address || '-'}, RT ${student.rt_rw || '-'}, Kel. ${student.village || '-'}, Kec. ${student.district || '-'}, ${student.regency || '-'}
@@ -1114,7 +1139,7 @@ const App = {
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px;">
         <div style="background: var(--light-bg); padding: 16px; border-radius: var(--radius-md);">
           <div style="font-weight: 700; font-size: 13.5px; margin-bottom: 8px; color: var(--primary-hover);">
             <i class="fa-solid fa-user-tie"></i> Data Orang Tua Kandung
@@ -1131,14 +1156,92 @@ const App = {
 
         <div style="background: var(--light-bg); padding: 16px; border-radius: var(--radius-md);">
           <div style="font-weight: 700; font-size: 13.5px; margin-bottom: 8px; color: var(--primary-hover);">
-            <i class="fa-solid fa-graduation-cap"></i> Riwayat Pendidikan & Beasiswa
+            <i class="fa-solid fa-graduation-cap"></i> Riwayat Pendidikan & Asal
           </div>
           <div style="font-size: 12.5px; line-height: 1.6; color: var(--dark);">
             <div><b>Sekolah Asal (SD/MI):</b> ${h.prev_school || '-'}</div>
-            <div><b>No. Ijazah SD:</b> ${h.prev_diploma_no || '-'}</div>
+            <div><b>No. Ijazah SD/MI:</b> ${h.prev_diploma_no || '-'}</div>
             <div><b>Diterima Tgl:</b> ${h.accepted_date || '-'} di ${h.accepted_class || '-'}</div>
             <div><b>Beasiswa/Prestasi:</b> ${h.scholarships || '-'}</div>
-            <div><b>No. Peserta Ujian:</b> ${h.exam_number || '-'}</div>
+            <div><b>No. Seri Ijazah SMP:</b> ${h.graduation_diploma_no || '-'}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: DOKUMEN & SCAN IJAZAH SISWA -->
+      <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <div style="font-weight: 700; font-size: 14px; color: var(--dark);">
+            <i class="fa-solid fa-file-shield" style="color: var(--primary);"></i> Berkas Lampiran Dokumen & Scan Ijazah
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-sm btn-secondary" onclick="App.openUploadDiplomaModal('${studentId}')">
+              <i class="fa-solid fa-upload"></i> Upload / Ganti Ijazah
+            </button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <!-- Card Ijazah SD -->
+          <div class="diploma-upload-card" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 700; font-size: 12.5px;">Ijazah SD/MI Asal</span>
+              ${prevFile ? '<span class="badge badge-success">Terlampir</span>' : '<span class="badge badge-warning">Belum Ada</span>'}
+            </div>
+            <div style="font-size: 11.5px; color: var(--dark-soft);">
+              No: <b>${h.prev_diploma_no || '-'}</b>
+            </div>
+            <div class="diploma-preview-container" style="height: 130px;">
+              ${prevFile ? `
+                <img src="${prevFile}" alt="Scan Ijazah SD">
+              ` : `
+                <div class="diploma-preview-empty">
+                  <i class="fa-solid fa-file-excel" style="font-size: 24px; color: #8C9B90; margin-bottom: 4px; display: block;"></i>
+                  <span style="font-size: 11px;">Belum ada scan file</span>
+                </div>
+              `}
+            </div>
+            <div style="display: flex; gap: 6px;">
+              ${prevFile ? `
+                <button class="btn btn-sm btn-outline" style="flex: 1;" onclick="App.viewDiplomaImage('prev', '${prevFile}')">
+                  <i class="fa-solid fa-expand"></i> Pratinjau
+                </button>
+              ` : ''}
+              <button class="btn btn-sm btn-primary" style="flex: 1;" onclick="App.directPrintStudent('${studentId}', 'lembar_ijazah')">
+                <i class="fa-solid fa-print"></i> Cetak Lembar Ijazah
+              </button>
+            </div>
+          </div>
+
+          <!-- Card Ijazah SMP -->
+          <div class="diploma-upload-card" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 700; font-size: 12.5px;">Ijazah Kelulusan SMP</span>
+              ${gradFile ? '<span class="badge badge-success">Terlampir</span>' : '<span class="badge badge-secondary">Format Nasional</span>'}
+            </div>
+            <div style="font-size: 11.5px; color: var(--dark-soft);">
+              No: <b>${h.graduation_diploma_no || 'Format Cetak K13 Tersedia'}</b>
+            </div>
+            <div class="diploma-preview-container" style="height: 130px;">
+              ${gradFile ? `
+                <img src="${gradFile}" alt="Scan Ijazah SMP">
+              ` : `
+                <div class="diploma-preview-empty">
+                  <i class="fa-solid fa-certificate" style="font-size: 24px; color: var(--primary); margin-bottom: 4px; display: block;"></i>
+                  <span style="font-size: 11px;">Blangko Kelulusan & Transkrip K13 Siap Cetak</span>
+                </div>
+              `}
+            </div>
+            <div style="display: flex; gap: 6px;">
+              ${gradFile ? `
+                <button class="btn btn-sm btn-outline" style="flex: 1;" onclick="App.viewDiplomaImage('grad', '${gradFile}')">
+                  <i class="fa-solid fa-expand"></i> Pratinjau
+                </button>
+              ` : ''}
+              <button class="btn btn-sm btn-primary" style="flex: 1;" onclick="App.directPrintStudent('${studentId}', 'cetak_ijazah_transkrip')">
+                <i class="fa-solid fa-print"></i> Cetak Ijazah K13
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1146,10 +1249,134 @@ const App = {
 
     document.getElementById('btnDetailPrintDirect').onclick = () => {
       this.closeModal('modalStudentDetail');
-      this.directPrintStudent(studentId);
+      this.directPrintStudent(studentId, 'biodata_siswa');
     };
 
     this.openModal('modalStudentDetail');
+  },
+
+  // Open Quick Upload & Manage Diploma Modal
+  openUploadDiplomaModal(studentId) {
+    const student = Store.students.find(s => s.student_id === studentId);
+    if (!student) return;
+
+    document.getElementById('quickDiplomaStudentId').value = studentId;
+    document.getElementById('quickDiplomaStudentName').textContent = `${student.full_name} (${student.nis || '-'})`;
+    document.getElementById('quickDiplomaStudentInfo').textContent = `Kelas: ${student.current_class} | NISN: ${student.nisn || '-'} | Asal Sekolah: ${student.history ? student.history.prev_school || '-' : '-'}`;
+
+    const h = student.history || {};
+    document.getElementById('quickPrevNo').value = h.prev_diploma_no || '';
+    document.getElementById('quickGradNo').value = h.graduation_diploma_no || '';
+
+    this.setQuickDiplomaPreview('prev', h.prev_diploma_file || '');
+    this.setQuickDiplomaPreview('grad', h.graduation_diploma_file || '');
+
+    this.openModal('modalUploadDiploma');
+  },
+
+  setQuickDiplomaPreview(type, url) {
+    const prefix = type === 'prev' ? 'quickPrev' : 'quickGrad';
+    const img = document.getElementById(`${prefix}Img`);
+    const placeholder = document.getElementById(`${prefix}Placeholder`);
+    const badge = document.getElementById(`${prefix}Badge`);
+    const btnDel = document.getElementById(`btn${type === 'prev' ? 'QuickPrev' : 'QuickGrad'}Delete`);
+
+    if (url) {
+      if (img) { img.src = url; img.style.display = 'block'; }
+      if (placeholder) placeholder.style.display = 'none';
+      if (badge) {
+        badge.className = 'diploma-badge-attached';
+        badge.innerHTML = '<i class="fa-solid fa-check"></i> Terlampir';
+      }
+      if (btnDel) btnDel.style.display = 'inline-flex';
+    } else {
+      if (img) { img.src = ''; img.style.display = 'none'; }
+      if (placeholder) placeholder.style.display = 'block';
+      if (badge) {
+        badge.className = 'diploma-badge-empty';
+        badge.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Belum Ada';
+      }
+      if (btnDel) btnDel.style.display = 'none';
+    }
+  },
+
+  handleQuickDiplomaUpload(e, type) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      this.setQuickDiplomaPreview(type, evt.target.result);
+    };
+    reader.readAsDataURL(file);
+  },
+
+  deleteQuickDiploma(type) {
+    this.setQuickDiplomaPreview(type, '');
+  },
+
+  saveQuickDiplomaData() {
+    const studentId = document.getElementById('quickDiplomaStudentId').value;
+    const student = Store.students.find(s => s.student_id === studentId);
+    if (!student) return;
+
+    if (!student.history) student.history = {};
+
+    student.history.prev_diploma_no = document.getElementById('quickPrevNo').value.trim();
+    student.history.graduation_diploma_no = document.getElementById('quickGradNo').value.trim();
+
+    const prevImg = document.getElementById('quickPrevImg');
+    const gradImg = document.getElementById('quickGradImg');
+
+    student.history.prev_diploma_file = (prevImg && prevImg.style.display !== 'none') ? prevImg.src : '';
+    student.history.graduation_diploma_file = (gradImg && gradImg.style.display !== 'none') ? gradImg.src : '';
+
+    Store.saveLocal();
+    this.renderStudentsTable();
+    this.closeModal('modalUploadDiploma');
+    this.showToast(`Berkas ijazah untuk ${student.full_name} berhasil diperbarui!`, 'success');
+
+    // Sync to GAS in background
+    if (Store.config.gas_api_url) {
+      ApiService.call('saveStudent', { data: student });
+    }
+  },
+
+  viewDiplomaImage(type, directUrl = '') {
+    let url = directUrl;
+    if (!url) {
+      if (type === 'prev') {
+        const el = document.getElementById('formPrevDiplomaFile');
+        url = el ? el.value : '';
+      } else {
+        const el = document.getElementById('formGraduationDiplomaFile');
+        url = el ? el.value : '';
+      }
+    }
+    if (!url) {
+      this.showToast('Belum ada berkas scan yang diunggah.', 'warning');
+      return;
+    }
+    const imgEl = document.getElementById('lightboxImg');
+    const titleEl = document.getElementById('lightboxTitle');
+    if (imgEl) imgEl.src = url;
+    if (titleEl) titleEl.textContent = type === 'prev' ? 'Pratinjau Ijazah SD/MI Asal' : 'Pratinjau Ijazah Kelulusan SMP';
+
+    const lightbox = document.getElementById('modalImageViewer');
+    if (lightbox) lightbox.classList.add('active');
+  },
+
+  closeLightbox() {
+    const lightbox = document.getElementById('modalImageViewer');
+    if (lightbox) lightbox.classList.remove('active');
+  },
+
+  printCurrentDiplomaInViewer() {
+    this.closeLightbox();
+    const currentStudentId = document.getElementById('quickDiplomaStudentId').value ||
+      (Store.students[0] ? Store.students[0].student_id : '');
+    if (currentStudentId) {
+      this.directPrintStudent(currentStudentId, 'lembar_ijazah');
+    }
   },
 
   // Delete Student
@@ -1175,10 +1402,15 @@ const App = {
   },
 
   // Jump to Print View for specific student
-  directPrintStudent(studentId) {
-    document.getElementById('printDocTypeSelect').value = 'biodata_siswa';
+  directPrintStudent(studentId, docType = 'biodata_siswa') {
+    this.closeModal('modalStudentDetail');
+    this.closeModal('modalUploadDiploma');
+    this.closeLightbox();
+
+    document.getElementById('printDocTypeSelect').value = docType;
     document.getElementById('printStudentSelect').value = studentId;
     this.navigateTo('view-print');
+    PrintEngine.renderSelectedDocument();
   },
 
   // Print Transkrip for active student
@@ -1530,6 +1762,8 @@ const Wizard = {
     document.getElementById('formStudentId').value = '';
     document.getElementById('formPhotoUrl').value = '';
     this.setPhotoPreview('');
+    this.clearPrevDiploma();
+    this.clearGradDiploma();
     this.goToStep(1);
   },
 
@@ -1598,6 +1832,8 @@ const Wizard = {
     document.getElementById('formExamNumber').value = h.exam_number || '';
 
     this.setPhotoPreview(student.photo_url);
+    this.setPrevDiplomaPreview(h.prev_diploma_file || '');
+    this.setGradDiplomaPreview(h.graduation_diploma_file || '');
     this.goToStep(1);
   },
 
@@ -1631,6 +1867,100 @@ const Wizard = {
     }
   },
 
+  handlePrevDiplomaUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      this.setPrevDiplomaPreview(evt.target.result);
+    };
+    reader.readAsDataURL(file);
+  },
+
+  setPrevDiplomaPreview(url) {
+    const img = document.getElementById('prevDiplomaImg');
+    const placeholder = document.getElementById('prevDiplomaPlaceholder');
+    const hiddenInput = document.getElementById('formPrevDiplomaFile');
+    const badge = document.getElementById('prevDiplomaBadge');
+    const btnView = document.getElementById('btnPrevDiplomaView');
+    const btnRemove = document.getElementById('btnPrevDiplomaRemove');
+
+    if (url) {
+      if (img) { img.src = url; img.style.display = 'block'; }
+      if (placeholder) placeholder.style.display = 'none';
+      if (hiddenInput) hiddenInput.value = url;
+      if (badge) {
+        badge.className = 'diploma-badge-attached';
+        badge.innerHTML = '<i class="fa-solid fa-check"></i> Ijazah SD Terlampir';
+      }
+      if (btnView) btnView.style.display = 'inline-flex';
+      if (btnRemove) btnRemove.style.display = 'inline-flex';
+    } else {
+      if (img) { img.src = ''; img.style.display = 'none'; }
+      if (placeholder) placeholder.style.display = 'block';
+      if (hiddenInput) hiddenInput.value = '';
+      if (badge) {
+        badge.className = 'diploma-badge-empty';
+        badge.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Belum Dilampirkan';
+      }
+      if (btnView) btnView.style.display = 'none';
+      if (btnRemove) btnRemove.style.display = 'none';
+    }
+  },
+
+  clearPrevDiploma() {
+    this.setPrevDiplomaPreview('');
+    const input = document.getElementById('formPrevDiplomaFileInput');
+    if (input) input.value = '';
+  },
+
+  handleGradDiplomaUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      this.setGradDiplomaPreview(evt.target.result);
+    };
+    reader.readAsDataURL(file);
+  },
+
+  setGradDiplomaPreview(url) {
+    const img = document.getElementById('gradDiplomaImg');
+    const placeholder = document.getElementById('gradDiplomaPlaceholder');
+    const hiddenInput = document.getElementById('formGraduationDiplomaFile');
+    const badge = document.getElementById('gradDiplomaBadge');
+    const btnView = document.getElementById('btnGradDiplomaView');
+    const btnRemove = document.getElementById('btnGradDiplomaRemove');
+
+    if (url) {
+      if (img) { img.src = url; img.style.display = 'block'; }
+      if (placeholder) placeholder.style.display = 'none';
+      if (hiddenInput) hiddenInput.value = url;
+      if (badge) {
+        badge.className = 'diploma-badge-attached';
+        badge.innerHTML = '<i class="fa-solid fa-check"></i> Ijazah SMP Terlampir';
+      }
+      if (btnView) btnView.style.display = 'inline-flex';
+      if (btnRemove) btnRemove.style.display = 'inline-flex';
+    } else {
+      if (img) { img.src = ''; img.style.display = 'none'; }
+      if (placeholder) placeholder.style.display = 'block';
+      if (hiddenInput) hiddenInput.value = '';
+      if (badge) {
+        badge.className = 'diploma-badge-empty';
+        badge.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Belum Dilampirkan';
+      }
+      if (btnView) btnView.style.display = 'none';
+      if (btnRemove) btnRemove.style.display = 'none';
+    }
+  },
+
+  clearGradDiploma() {
+    this.setGradDiplomaPreview('');
+    const input = document.getElementById('formGraduationDiplomaFileInput');
+    if (input) input.value = '';
+  },
+
   submitForm() {
     const studentId = document.getElementById('formStudentId').value.trim();
     const isNew = !studentId;
@@ -1640,6 +1970,9 @@ const Wizard = {
       (document.getElementById('formGender').value === 'P'
         ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop'
         : 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=400&fit=crop');
+
+    const prevDiplomaFile = document.getElementById('formPrevDiplomaFile') ? document.getElementById('formPrevDiplomaFile').value.trim() : '';
+    const gradDiplomaFile = document.getElementById('formGraduationDiplomaFile') ? document.getElementById('formGraduationDiplomaFile').value.trim() : '';
 
     const studentObj = {
       student_id: finalId,
@@ -1693,6 +2026,7 @@ const Wizard = {
       history: {
         prev_school: document.getElementById('formPrevSchool').value.trim(),
         prev_diploma_no: document.getElementById('formPrevDiplomaNo').value.trim(),
+        prev_diploma_file: prevDiplomaFile,
         accepted_date: document.getElementById('formAcceptedDate').value,
         accepted_class: document.getElementById('formAcceptedClass').value.trim() || document.getElementById('formClass').value,
         scholarships: document.getElementById('formScholarships').value.trim(),
@@ -1700,6 +2034,7 @@ const Wizard = {
         mutation_out_reason: document.getElementById('formMutationOutReason').value.trim(),
         graduation_date: document.getElementById('formGraduationDate').value,
         graduation_diploma_no: document.getElementById('formGraduationDiplomaNo').value.trim(),
+        graduation_diploma_file: gradDiplomaFile,
         exam_number: document.getElementById('formExamNumber').value.trim()
       }
     };
@@ -1880,7 +2215,12 @@ const PrintEngine = {
     const selectorGroup = document.getElementById('printStudentSelectorGroup');
 
     if (selectorGroup) {
-      selectorGroup.style.display = (docType === 'biodata_siswa' || docType === 'transkrip_nilai') ? 'block' : 'none';
+      selectorGroup.style.display = (
+        docType === 'biodata_siswa' ||
+        docType === 'transkrip_nilai' ||
+        docType === 'lembar_ijazah' ||
+        docType === 'cetak_ijazah_transkrip'
+      ) ? 'block' : 'none';
     }
 
     if (!container) return;
@@ -1893,6 +2233,14 @@ const PrintEngine = {
 
       case 'transkrip_nilai':
         container.innerHTML = this.getTranskripNilaiTemplate(student);
+        break;
+
+      case 'lembar_ijazah':
+        container.innerHTML = this.getLembarIjazahTemplate(student);
+        break;
+
+      case 'cetak_ijazah_transkrip':
+        container.innerHTML = this.getCetakIjazahTranskripTemplate(student);
         break;
 
       case 'cover_buku_induk':
@@ -1911,6 +2259,248 @@ const PrintEngine = {
         container.innerHTML = this.getRekapitulasiSiswaTemplate();
         break;
     }
+  },
+
+  // 3. Lembar Lampiran & Scan Ijazah Siswa (SD & SMP)
+  getLembarIjazahTemplate(s) {
+    if (!s) return '<p>Pilih siswa terlebih dahulu.</p>';
+    const c = Store.config;
+    const p = s.parent || {};
+    const h = s.history || {};
+    const photo = s.photo_url || (s.gender === 'P'
+      ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop'
+      : 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=400&fit=crop');
+
+    const prevDiplomaFile = h.prev_diploma_file;
+    const gradDiplomaFile = h.graduation_diploma_file;
+
+    return `
+      <div class="a4-page">
+        <!-- Kop Surat -->
+        <div class="doc-kop-surat">
+          <img src="${c.logo_url}" class="doc-kop-logo" alt="Logo">
+          <div class="doc-kop-text">
+            <h2>${c.school_name}</h2>
+            <h3>LEMBAR LAMPIRAN DOKUMEN & ARSIP IJAZAH</h3>
+            <p>${c.address}, ${c.city}, ${c.province} • NPSN: ${c.npsn}</p>
+          </div>
+        </div>
+
+        <div class="doc-title-box" style="margin-bottom: 10px;">
+          <h1>LEMBAR ARSIP DOKUMEN & IJAZAH PESERTA DIDIK</h1>
+          <p>NIS: <b>${s.nis || '-'}</b> &nbsp;|&nbsp; NISN: <b>${s.nisn || '-'}</b> &nbsp;|&nbsp; Nama: <b>${s.full_name}</b></p>
+        </div>
+
+        <!-- Ringkasan Identitas Dokumen -->
+        <table class="doc-table" style="margin-bottom: 12px; font-size: 9pt;">
+          <tr>
+            <td style="width: 140px; font-weight: bold; background: #FAFAFA;">Sekolah Asal (SD/MI)</td>
+            <td style="width: 220px;">${h.prev_school || '-'}</td>
+            <td style="width: 140px; font-weight: bold; background: #FAFAFA;">No. Ijazah SD/MI</td>
+            <td><b>${h.prev_diploma_no || '-'}</b></td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold; background: #FAFAFA;">Tgl Diterima di SMP</td>
+            <td>${h.accepted_date || '-'} (Kelas ${h.accepted_class || s.current_class})</td>
+            <td style="font-weight: bold; background: #FAFAFA;">No. Seri Ijazah SMP</td>
+            <td><b>${h.graduation_diploma_no || (s.status === 'Alumni' ? 'DN-01/D-SMP/K13/2026/' + (s.nis || '001') : 'Belum Terbit (Siswa Aktif)')}</b></td>
+          </tr>
+        </table>
+
+        <!-- 1. Frame Arsip Ijazah SD/MI Asal -->
+        <div style="font-size: 10pt; font-weight: 700; color: #2E4036; margin-top: 6px; margin-bottom: 4px; display: flex; justify-content: space-between;">
+          <span>A. Salinan / Scan Ijazah Sekolah Dasar (SD / MI) Asal</span>
+          <span style="font-size: 8.5pt; font-weight: normal; color: #555;">Status: ${prevDiplomaFile ? '✓ Dokumen Terlampir Digital' : 'Arsip Fisik Manual'}</span>
+        </div>
+        
+        <div class="diploma-attachment-box" style="min-height: 95mm; max-height: 100mm;">
+          ${prevDiplomaFile ? `
+            <img src="${prevDiplomaFile}" alt="Scan Ijazah SD" style="max-height: 90mm;">
+          ` : `
+            <div class="diploma-attachment-placeholder">
+              <i class="fa-solid fa-file-shield" style="font-size: 32px; color: #88AB8E; margin-bottom: 8px; display: block;"></i>
+              <div style="font-weight: 700; font-size: 11pt; color: #2E4036;">TEMPAT PENEMPELAN SALINAN IJAZAH SD/MI TERLEGALISIR</div>
+              <div style="font-size: 8.5pt; color: #666; margin-top: 4px;">
+                Nomor Seri Ijazah: <b>${h.prev_diploma_no || '-'}</b> • Asal Sekolah: <b>${h.prev_school || '-'}</b>
+              </div>
+              <div style="font-size: 8pt; color: #888; margin-top: 8px; border: 1px dashed #AFC8AD; padding: 4px 12px; display: inline-block; border-radius: 4px;">
+                Tempelkan salinan fotocopy Ijazah SD/MI yang telah dilegalisir basah oleh Kepala SD/MI asal
+              </div>
+            </div>
+          `}
+        </div>
+
+        <!-- 2. Frame Arsip Ijazah Kelulusan SMP / SKL -->
+        <div style="font-size: 10pt; font-weight: 700; color: #2E4036; margin-top: 6px; margin-bottom: 4px; display: flex; justify-content: space-between;">
+          <span>B. Salinan / Scan Ijazah Kelulusan SMP & Transkrip Akhir</span>
+          <span style="font-size: 8.5pt; font-weight: normal; color: #555;">Status: ${gradDiplomaFile ? '✓ Dokumen Terlampir Digital' : (s.status === 'Alumni' ? 'Arsip Fisik Kelulusan' : 'Tahap Pembelajaran')}</span>
+        </div>
+
+        <div class="diploma-attachment-box" style="min-height: 85mm; max-height: 90mm;">
+          ${gradDiplomaFile ? `
+            <img src="${gradDiplomaFile}" alt="Scan Ijazah SMP" style="max-height: 80mm;">
+          ` : `
+            <div class="diploma-attachment-placeholder">
+              <i class="fa-solid fa-graduation-cap" style="font-size: 30px; color: #88AB8E; margin-bottom: 6px; display: block;"></i>
+              <div style="font-weight: 700; font-size: 10.5pt; color: #2E4036;">TEMPAT PENEMPELAN SALINAN IJAZAH SMP / SURAT KETERANGAN LULUS (SKL)</div>
+              <div style="font-size: 8.5pt; color: #666; margin-top: 4px;">
+                Nomor Seri Ijazah SMP: <b>${h.graduation_diploma_no || (s.status === 'Alumni' ? 'DN-01/D-SMP/K13/2026/' + s.nis : 'Dalam Proses Kelulusan')}</b>
+              </div>
+            </div>
+          `}
+        </div>
+
+        <!-- Footer Pengesahan & Tanda Tangan -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 14px; page-break-inside: avoid;">
+          <div style="width: 95px; height: 125px; border: 1px solid #000; padding: 2px; text-align: center; display: flex; align-items: center; justify-content: center; position: relative;">
+            <img src="${photo}" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto Siswa">
+            <div style="position: absolute; bottom: 2px; background: rgba(255,255,255,0.85); font-size: 7pt; width: 100%; font-weight: bold;">Cap Sekolah</div>
+          </div>
+
+          <div class="sig-box">
+            <div>${c.city}, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+            <div>Kepala Sekolah,</div>
+            <div class="sig-space" style="height: 50px;"></div>
+            <div class="sig-name">${c.headmaster_name}</div>
+            <div>NIP. ${c.headmaster_nip}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  // 4. Format Cetak Ijazah / Transkrip Kelulusan K13 Resmi
+  getCetakIjazahTranskripTemplate(s) {
+    if (!s) return '<p>Pilih siswa terlebih dahulu.</p>';
+    const c = Store.config;
+    const p = s.parent || {};
+    const h = s.history || {};
+    const photo = s.photo_url || (s.gender === 'P'
+      ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop'
+      : 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=400&fit=crop');
+
+    const studentGrades = Store.grades.filter(g => g.student_id === s.student_id);
+    const diplomaNo = h.graduation_diploma_no || `DN-01/D-SMP/K13/2026/${s.nis || '001'}`;
+
+    let totalRapor = 0;
+    let totalUS = 0;
+    let totalNA = 0;
+    let count = 0;
+
+    let rowsHtml = '';
+    Store.subjects.forEach((subj, idx) => {
+      const g = studentGrades.find(x => x.subject_code === subj.subject_code) || {};
+      const kScore = parseFloat(g.knowledge_score) || 82;
+      const sScore = parseFloat(g.skill_score) || 84;
+      const avgRapor = ((kScore + sScore) / 2);
+      const usScore = parseFloat(g.final_exam_score) || (kScore + 2 > 100 ? 98 : kScore + 2);
+      const naScore = parseFloat(((avgRapor * 0.6) + (usScore * 0.4)).toFixed(1));
+      const pred = GradesModule.getPredicate(naScore, subj.kkm);
+
+      totalRapor += avgRapor;
+      totalUS += usScore;
+      totalNA += naScore;
+      count++;
+
+      rowsHtml += `
+        <tr>
+          <td style="text-align: center;">${idx + 1}</td>
+          <td>${subj.subject_name}</td>
+          <td style="text-align: center;">${avgRapor.toFixed(1)}</td>
+          <td style="text-align: center;">${usScore.toFixed(1)}</td>
+          <td style="text-align: center; font-weight: bold;">${naScore.toFixed(1)}</td>
+          <td style="text-align: center; font-weight: bold;">${pred}</td>
+        </tr>
+      `;
+    });
+
+    const avgFinalNA = count > 0 ? (totalNA / count).toFixed(2) : '0.00';
+    const finalPred = GradesModule.getPredicate(avgFinalNA, 75);
+
+    return `
+      <div class="a4-page">
+        <div class="certificate-frame">
+          <div class="certificate-header">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 6px;">
+              <img src="${c.logo_url}" style="width: 54px; height: 54px; object-fit: contain;" alt="Logo">
+              <div>
+                <div style="font-size: 13pt; font-weight: 800; letter-spacing: 0.5px; color: #2E4036;">${c.school_name}</div>
+                <div style="font-size: 8.5pt; color: #42584C;">NPSN: ${c.npsn} • NSS: ${c.nss || '202050101001'} • Akreditasi A (Unggul)</div>
+                <div style="font-size: 8pt; color: #666;">${c.address}, ${c.city}, ${c.province}</div>
+              </div>
+            </div>
+            <div class="certificate-title">SURAT KETERANGAN LULUS & TRANSKRIP NILAI IJAZAH</div>
+            <div class="certificate-subtitle">TAHUN PELAJARAN ${c.academic_year} • KURIKULUM 2013 NASIONAL</div>
+            <div style="font-size: 9pt; font-weight: bold; margin-top: 4px; color: #2E4036;">NOMOR: ${diplomaNo}</div>
+          </div>
+
+          <div style="font-size: 9pt; margin-bottom: 10px; line-height: 1.5;">
+            Kepala Sekolah Menengah Pertama (SMP) Islam Terpadu Al-Imam menerangkan bahwa:
+          </div>
+
+          <table style="width: 100%; font-size: 9pt; margin-bottom: 10px; line-height: 1.4;">
+            <tr>
+              <td style="width: 160px;">Nama Peserta Didik</td><td style="width: 10px;">:</td><td><b>${s.full_name}</b></td>
+            </tr>
+            <tr>
+              <td>Tempat dan Tanggal Lahir</td><td>:</td><td>${s.birth_place || '-'}, ${s.birth_date || '-'}</td>
+            </tr>
+            <tr>
+              <td>Nama Orang Tua / Wali</td><td>:</td><td>${(s.parent && s.parent.father_name) ? s.parent.father_name : (s.parent && s.parent.mother_name ? s.parent.mother_name : '-')}</td>
+            </tr>
+            <tr>
+              <td>Nomor Induk Siswa (NIS)</td><td>:</td><td>${s.nis || '-'}</td>
+            </tr>
+            <tr>
+              <td>Nomor Induk Siswa Nasional (NISN)</td><td>:</td><td>${s.nisn || '-'}</td>
+            </tr>
+            <tr>
+              <td>Sekolah Asal</td><td>:</td><td>${h.prev_school || 'SDIT Nurul Fikri'}</td>
+            </tr>
+          </table>
+
+          <div style="font-size: 9pt; margin-bottom: 10px; text-align: justify; line-height: 1.4;">
+            Dinyatakan <b>LULUS</b> dari Satuan Pendidikan SMP Islam Terpadu Al-Imam dengan daftar perolehan nilai akhir sebagai berikut:
+          </div>
+
+          <table class="doc-table" style="font-size: 8.5pt;">
+            <thead>
+              <tr style="background: #EAEAEA;">
+                <th style="width: 25px;">No</th>
+                <th>Mata Pelajaran</th>
+                <th style="width: 85px;">Rata-rata Rapor (Sem 1-6)</th>
+                <th style="width: 85px;">Ujian Sekolah (US)</th>
+                <th style="width: 85px;">Nilai Akhir Ijazah</th>
+                <th style="width: 60px;">Predikat</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+              <tr style="background: #F4F7F4; font-weight: bold;">
+                <td colspan="4" style="text-align: right; padding-right: 12px;">RATA-RATA NILAI AKHIR IJAZAH:</td>
+                <td style="text-align: center; font-size: 9.5pt; color: #2E4036;">${avgFinalNA}</td>
+                <td style="text-align: center; color: #10B981;">${finalPred}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 18px; page-break-inside: avoid;">
+            <div style="width: 95px; height: 125px; border: 1px solid #000; padding: 2px; text-align: center; display: flex; align-items: center; justify-content: center; position: relative;">
+              <img src="${photo}" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto Siswa">
+              <div style="position: absolute; bottom: 2px; background: rgba(255,255,255,0.9); font-size: 7pt; width: 100%; font-weight: bold;">Cap Stempel</div>
+            </div>
+
+            <div class="sig-box" style="width: 220px;">
+              <div>${c.city}, ${h.graduation_date ? new Date(h.graduation_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+              <div>Kepala Sekolah,</div>
+              <div class="sig-space" style="height: 55px;"></div>
+              <div class="sig-name">${c.headmaster_name}</div>
+              <div>NIP. ${c.headmaster_nip}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   },
 
   // 1. Lembar Biodata Siswa Resmi Format Buku Induk

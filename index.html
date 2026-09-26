@@ -532,6 +532,41 @@
                     <label class="form-label">Tanggal Diterima di SMP</label>
                     <input type="date" id="formAcceptedDate" class="form-control">
                   </div>
+
+                  <!-- Upload Scan Ijazah SD/MI Asal -->
+                  <div class="form-group col-span-2">
+                    <div class="diploma-upload-card">
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-weight: 700; font-size: 13px; color: var(--dark);">
+                          <i class="fa-solid fa-file-invoice" style="color: var(--primary);"></i> Lampiran Berkas Scan Ijazah SD/MI
+                        </div>
+                        <span id="prevDiplomaBadge" class="diploma-badge-empty">
+                          <i class="fa-solid fa-circle-exclamation"></i> Belum Dilampirkan
+                        </span>
+                      </div>
+                      <div class="diploma-preview-container" id="prevDiplomaPreviewBox">
+                        <img id="prevDiplomaImg" src="" alt="Scan Ijazah SD" style="display: none;">
+                        <div id="prevDiplomaPlaceholder" class="diploma-preview-empty">
+                          <i class="fa-solid fa-file-arrow-up" style="font-size: 28px; color: var(--secondary); margin-bottom: 8px; display: block;"></i>
+                          <span>Unggah scan foto atau salinan Ijazah SD/MI (JPG/PNG/PDF)</span>
+                        </div>
+                      </div>
+                      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <label class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                          <i class="fa-solid fa-upload"></i> Pilih Berkas Ijazah SD
+                          <input type="file" id="formPrevDiplomaFileInput" accept="image/*,.pdf" style="display: none;">
+                        </label>
+                        <button type="button" class="btn btn-outline btn-sm" id="btnPrevDiplomaView" style="display: none;" onclick="App.viewDiplomaImage('prev')">
+                          <i class="fa-solid fa-expand"></i> Perbesar
+                        </button>
+                        <button type="button" class="btn btn-outline btn-sm" id="btnPrevDiplomaRemove" style="display: none; color: var(--danger);" onclick="Wizard.clearPrevDiploma()">
+                          <i class="fa-solid fa-trash"></i> Hapus
+                        </button>
+                      </div>
+                      <input type="hidden" id="formPrevDiplomaFile" value="">
+                    </div>
+                  </div>
+
                   <div class="form-group">
                     <label class="form-label">Diterima di Kelas</label>
                     <input type="text" id="formAcceptedClass" class="form-control" value="VII-A">
@@ -545,10 +580,10 @@
                     <input type="text" id="formScholarships" class="form-control" placeholder="Beasiswa Tahfidz 3 Juz / Prestasi OSN Matematika">
                   </div>
 
-                  <!-- Riwayat Mutasi / Kelulusan -->
+                  <!-- Riwayat Mutasi / Kelulusan & Ijazah SMP -->
                   <div class="form-group col-span-full" style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border-color);">
                     <div style="font-weight: 700; font-size: 13.5px; margin-bottom: 12px; color: var(--dark-soft);">
-                      D. Riwayat Meninggalkan Sekolah / Kelulusan (Diisi jika telah mutasi/tamat)
+                      D. Riwayat Kelulusan / Meninggalkan Sekolah & Ijazah SMP
                     </div>
                   </div>
                   <div class="form-group">
@@ -566,6 +601,40 @@
                   <div class="form-group">
                     <label class="form-label">Nomor Seri Ijazah SMP</label>
                     <input type="text" id="formGraduationDiplomaNo" class="form-control" placeholder="DN-01/D-SMP/K13/2026/00123">
+                  </div>
+
+                  <!-- Upload Scan Ijazah Kelulusan SMP -->
+                  <div class="form-group col-span-2">
+                    <div class="diploma-upload-card">
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-weight: 700; font-size: 13px; color: var(--dark);">
+                          <i class="fa-solid fa-graduation-cap" style="color: var(--primary);"></i> Lampiran Berkas Scan Ijazah Kelulusan SMP
+                        </div>
+                        <span id="gradDiplomaBadge" class="diploma-badge-empty">
+                          <i class="fa-solid fa-circle-exclamation"></i> Belum Dilampirkan
+                        </span>
+                      </div>
+                      <div class="diploma-preview-container" id="gradDiplomaPreviewBox">
+                        <img id="gradDiplomaImg" src="" alt="Scan Ijazah SMP" style="display: none;">
+                        <div id="gradDiplomaPlaceholder" class="diploma-preview-empty">
+                          <i class="fa-solid fa-file-circle-check" style="font-size: 28px; color: var(--secondary); margin-bottom: 8px; display: block;"></i>
+                          <span>Unggah scan Ijazah SMP / Surat Keterangan Lulus (JPG/PNG/PDF)</span>
+                        </div>
+                      </div>
+                      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <label class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                          <i class="fa-solid fa-upload"></i> Pilih Berkas Ijazah SMP
+                          <input type="file" id="formGraduationDiplomaFileInput" accept="image/*,.pdf" style="display: none;">
+                        </label>
+                        <button type="button" class="btn btn-outline btn-sm" id="btnGradDiplomaView" style="display: none;" onclick="App.viewDiplomaImage('grad')">
+                          <i class="fa-solid fa-expand"></i> Perbesar
+                        </button>
+                        <button type="button" class="btn btn-outline btn-sm" id="btnGradDiplomaRemove" style="display: none; color: var(--danger);" onclick="Wizard.clearGradDiploma()">
+                          <i class="fa-solid fa-trash"></i> Hapus
+                        </button>
+                      </div>
+                      <input type="hidden" id="formGraduationDiplomaFile" value="">
+                    </div>
                   </div>
                 </div>
               </div>
@@ -835,10 +904,12 @@
                 <select id="printDocTypeSelect" class="form-control" onchange="PrintEngine.renderSelectedDocument()">
                   <option value="biodata_siswa">1. Lembar Buku Induk Siswa Lengkap (Biodata + Foto 3x4)</option>
                   <option value="transkrip_nilai">2. Lembar Transkrip Nilai & Rapor K13 (6 Semester)</option>
-                  <option value="cover_buku_induk">3. Cover / Sampul Formal Buku Induk Siswa</option>
-                  <option value="petunjuk_isi">4. Petunjuk Pengisian & Lembar Ketentuan</option>
-                  <option value="lembar_pemeriksaan">5. Lembar Pemeriksaan / Audit Buku Induk</option>
-                  <option value="rekap_nisn">6. Rekapitulasi Daftar Siswa & Nomor Induk</option>
+                  <option value="lembar_ijazah">3. Lembar Lampiran & Arsip Scan Ijazah Siswa (SD & SMP)</option>
+                  <option value="cetak_ijazah_transkrip">4. Format Cetak Ijazah / Transkrip Kelulusan K13 Resmi</option>
+                  <option value="cover_buku_induk">5. Cover / Sampul Formal Buku Induk Siswa</option>
+                  <option value="petunjuk_isi">6. Petunjuk Pengisian & Lembar Ketentuan</option>
+                  <option value="lembar_pemeriksaan">7. Lembar Pemeriksaan / Audit Buku Induk</option>
+                  <option value="rekap_nisn">8. Rekapitulasi Daftar Siswa & Nomor Induk</option>
                 </select>
               </div>
               <div class="form-group" id="printStudentSelectorGroup">
@@ -1150,6 +1221,113 @@
         <button class="btn btn-primary" onclick="AuditModule.saveAudit()">
           <i class="fa-solid fa-check"></i> Simpan Catatan Audit
         </button>
+      </div>
+    </div>
+  <!-- MODAL: UPLOAD & KELOLA IJAZAH SISWA -->
+  <div class="modal-overlay" id="modalUploadDiploma">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3 class="app-card-title" id="uploadDiplomaModalTitle">
+          <i class="fa-solid fa-file-shield" style="color: var(--primary);"></i> Kelola & Upload Berkas Ijazah Siswa
+        </h3>
+        <button class="btn btn-sm btn-outline" onclick="App.closeModal('modalUploadDiploma')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="uploadDiplomaModalBody">
+        <input type="hidden" id="quickDiplomaStudentId" value="">
+        <div style="background: var(--light-bg); padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 20px;">
+          <div style="font-weight: 700; color: var(--dark); font-size: 15px;" id="quickDiplomaStudentName">-</div>
+          <div style="font-size: 12px; color: var(--dark-soft); margin-top: 2px;" id="quickDiplomaStudentInfo">-</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Ijazah SD/MI -->
+          <div class="diploma-upload-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-weight: 700; font-size: 13.5px; color: var(--dark);">
+                1. Ijazah SD/MI Asal
+              </div>
+              <span id="quickPrevBadge" class="diploma-badge-empty">Belum Ada</span>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" style="font-size: 11px;">Nomor Ijazah SD/MI</label>
+              <input type="text" id="quickPrevNo" class="form-control" placeholder="DN-01/D-SD/13/...">
+            </div>
+            <div class="diploma-preview-container" id="quickPrevPreviewBox" style="height: 160px;">
+              <img id="quickPrevImg" src="" alt="Scan SD" style="display: none;">
+              <div id="quickPrevPlaceholder" class="diploma-preview-empty">
+                <i class="fa-solid fa-file-arrow-up" style="font-size: 24px; color: var(--secondary); margin-bottom: 6px; display: block;"></i>
+                <span style="font-size: 11px;">Pilih berkas scan Ijazah SD</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer;">
+                <i class="fa-solid fa-upload"></i> Upload Scan SD
+                <input type="file" id="quickPrevFileInput" accept="image/*,.pdf" style="display: none;" onchange="App.handleQuickDiplomaUpload(event, 'prev')">
+              </label>
+              <button type="button" class="btn btn-outline btn-sm" id="btnQuickPrevDelete" onclick="App.deleteQuickDiploma('prev')" style="display: none; color: var(--danger);">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Ijazah SMP -->
+          <div class="diploma-upload-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-weight: 700; font-size: 13.5px; color: var(--dark);">
+                2. Ijazah Kelulusan SMP
+              </div>
+              <span id="quickGradBadge" class="diploma-badge-empty">Belum Ada</span>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" style="font-size: 11px;">Nomor Seri Ijazah SMP</label>
+              <input type="text" id="quickGradNo" class="form-control" placeholder="DN-01/D-SMP/K13/...">
+            </div>
+            <div class="diploma-preview-container" id="quickGradPreviewBox" style="height: 160px;">
+              <img id="quickGradImg" src="" alt="Scan SMP" style="display: none;">
+              <div id="quickGradPlaceholder" class="diploma-preview-empty">
+                <i class="fa-solid fa-graduation-cap" style="font-size: 24px; color: var(--secondary); margin-bottom: 6px; display: block;"></i>
+                <span style="font-size: 11px;">Pilih berkas scan Ijazah SMP</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <label class="btn btn-secondary btn-sm" style="flex: 1; cursor: pointer;">
+                <i class="fa-solid fa-upload"></i> Upload Scan SMP
+                <input type="file" id="quickGradFileInput" accept="image/*,.pdf" style="display: none;" onchange="App.handleQuickDiplomaUpload(event, 'grad')">
+              </label>
+              <button type="button" class="btn btn-outline btn-sm" id="btnQuickGradDelete" onclick="App.deleteQuickDiploma('grad')" style="display: none; color: var(--danger);">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="App.closeModal('modalUploadDiploma')">Tutup</button>
+        <button class="btn btn-primary" onclick="App.saveQuickDiplomaData()">
+          <i class="fa-solid fa-floppy-disk"></i> Simpan Berkas Ijazah
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX IMAGE VIEWER -->
+  <div class="lightbox-overlay" id="modalImageViewer" onclick="App.closeLightbox()">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <div style="padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);">
+        <h4 id="lightboxTitle" style="font-size: 14px; color: var(--dark); font-weight: 700;">Pratinjau Dokumen Ijazah</h4>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-sm btn-outline" onclick="App.printCurrentDiplomaInViewer()">
+            <i class="fa-solid fa-print"></i> Cetak Lembar Ijazah
+          </button>
+          <button class="btn btn-sm btn-outline" onclick="App.closeLightbox()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+      <div style="padding: 16px; display: flex; justify-content: center; background: #2E4036;">
+        <img id="lightboxImg" class="lightbox-img" src="" alt="Pratinjau">
       </div>
     </div>
   </div>
