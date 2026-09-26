@@ -345,23 +345,62 @@ const ApiService = {
     return url;
   },
 
+  jsonp(action, params = {}) {
+    const url = this.cleanUrl(Store.config.gas_api_url);
+    if (!url) return Promise.reject(new Error('URL GAS kosong'));
+
+    return new Promise((resolve, reject) => {
+      const callbackName = 'gas_cb_' + Math.round(1000000 * Math.random()) + '_' + Date.now();
+      const script = document.createElement('script');
+
+      const timeout = setTimeout(() => {
+        cleanup();
+        reject(new Error('JSONP timeout'));
+      }, 20000);
+
+      function cleanup() {
+        if (script.parentNode) script.parentNode.removeChild(script);
+        delete window[callbackName];
+        clearTimeout(timeout);
+      }
+
+      window[callbackName] = function(data) {
+        cleanup();
+        resolve(data);
+      };
+
+      script.onerror = function() {
+        cleanup();
+        reject(new Error('JSONP network error'));
+      };
+
+      const queryParams = new URLSearchParams({ action, ...params, callback: callbackName });
+      script.src = `${url}?${queryParams.toString()}`;
+      document.head.appendChild(script);
+    });
+  },
+
   async call(action, payload = {}, method = 'POST') {
     const url = this.cleanUrl(Store.config.gas_api_url);
     if (!url) return null;
 
     try {
-      let response;
       if (method === 'GET') {
-        const queryParams = new URLSearchParams({ action, ...payload });
-        response = await fetch(`${url}?${queryParams.toString()}`);
+        try {
+          return await this.jsonp(action, payload);
+        } catch (e) {
+          const queryParams = new URLSearchParams({ action, ...payload });
+          const response = await fetch(`${url}?${queryParams.toString()}`);
+          return await response.json();
+        }
       } else {
-        response = await fetch(url, {
+        const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action, ...payload })
         });
+        return await response.json();
       }
-      return await response.json();
     } catch (err) {
       console.warn('GAS API Call error:', action, err);
       return { status: 'error', message: err.toString() };
@@ -371,8 +410,24 @@ const ApiService = {
   async fetchAll() {
     const url = this.cleanUrl(Store.config.gas_api_url);
     if (!url) return null;
+
+    // 1. Try JSONP batch export (Bypasses all CORS!)
     try {
-      // First attempt single batch export
+      const batchRes = await this.jsonp('exportAllData');
+      if (batchRes && batchRes.status === 'success' && batchRes.data) {
+        return {
+          resStudents: { status: 'success', data: batchRes.data.students || [] },
+          resConfig: { status: 'success', data: batchRes.data.config || {} },
+          resSubjects: { status: 'success', data: batchRes.data.subjects || [] },
+          resAudits: { status: 'success', data: batchRes.data.audits || [] }
+        };
+      }
+    } catch (err) {
+      console.log('JSONP batch fetch fallback to standard endpoints:', err);
+    }
+
+    // 2. Fallback to standard fetch
+    try {
       const batchRes = await fetch(`${url}?action=exportAllData`).then(r => r.json()).catch(() => null);
       if (batchRes && batchRes.status === 'success' && batchRes.data) {
         return {
@@ -382,13 +437,15 @@ const ApiService = {
           resAudits: { status: 'success', data: batchRes.data.audits || [] }
         };
       }
+    } catch (err) {}
 
-      // Fallback to separate endpoints
+    // 3. Fallback to separate endpoints via JSONP
+    try {
       const [resStudents, resConfig, resSubjects, resAudits] = await Promise.all([
-        fetch(`${url}?action=getStudents`).then(r => r.json()).catch(() => null),
-        fetch(`${url}?action=getConfig`).then(r => r.json()).catch(() => null),
-        fetch(`${url}?action=getSubjects`).then(r => r.json()).catch(() => null),
-        fetch(`${url}?action=getAudits`).then(r => r.json()).catch(() => null)
+        this.jsonp('getStudents').catch(() => null),
+        this.jsonp('getConfig').catch(() => null),
+        this.jsonp('getSubjects').catch(() => null),
+        this.jsonp('getAudits').catch(() => null)
       ]);
       return { resStudents, resConfig, resSubjects, resAudits };
     } catch (err) {
@@ -655,7 +712,7 @@ const App = {
 
   // Test GAS Web App API Connection
   async testApiConnection(silent = false) {
-    const url = Store.config.gas_api_url;
+    const url = ApiService.cleanUrl(Store.config.gas_api_url);
     if (!url) {
       if (!silent) this.showToast('Masukkan URL Google Apps Script Web App terlebih dahulu!', 'warning');
       this.setApiStatus(false, 'Demo Data Mode');
@@ -664,8 +721,14 @@ const App = {
 
     try {
       this.setApiStatus(false, 'Menghubungkan...');
-      const res = await fetch(`${url}?action=ping`, { method: 'GET' });
-      const json = await res.json();
+      let json = null;
+      try {
+        json = await ApiService.jsonp('ping');
+      } catch (e) {
+        const res = await fetch(`${url}?action=ping`, { method: 'GET' });
+        json = await res.json();
+      }
+
       if (json && json.status === 'success') {
         this.setApiStatus(true, 'Google Sheets Online');
         if (!silent) this.showToast('Koneksi Google Apps Script Berhasil & Aktif!', 'success');

@@ -25,6 +25,7 @@ const SHEETS = {
 function doGet(e) {
   try {
     const action = (e && e.parameter && e.parameter.action) ? e.parameter.action : 'ping';
+    const callback = (e && e.parameter && e.parameter.callback) ? e.parameter.callback : null;
     const params = (e && e.parameter) ? e.parameter : {};
 
     let responseData = {};
@@ -75,13 +76,13 @@ function doGet(e) {
         break;
     }
 
-    return createJsonResponse(responseData);
+    return createJsonResponse(responseData, callback);
   } catch (err) {
     return createJsonResponse({
       status: 'error',
       message: err.toString(),
       stack: err.stack
-    });
+    }, (e && e.parameter ? e.parameter.callback : null));
   }
 }
 
@@ -139,9 +140,13 @@ function doPost(e) {
 }
 
 /**
- * Helper to produce standard JSON output with CORS support
+ * Helper to produce standard JSON output or JSONP with CORS support
  */
-function createJsonResponse(data) {
+function createJsonResponse(data, callback) {
+  if (callback) {
+    return ContentService.createTextOutput(callback + '(' + JSON.stringify(data) + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
 }
