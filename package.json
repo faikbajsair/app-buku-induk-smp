@@ -1,0 +1,21 @@
+{
+  "name": "app-buku-induk-smp",
+  "version": "2.5.0",
+  "description": "Aplikasi Buku Induk & Rapor K13 / Kurikulum Nasional Modern Berbasis Google Sheets & Cloud SPA",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y serve .",
+    "start": "npx -y serve ."
+  },
+  "keywords": [
+    "buku-induk",
+    "rapor-k13",
+    "kurikulum-nasional",
+    "google-apps-script",
+    "google-sheets-database",
+    "spa",
+    "school-management"
+  ],
+  "author": "Senior Full-Stack Architect",
+  "license": "Commercial"
+}
