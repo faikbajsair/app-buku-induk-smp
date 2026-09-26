@@ -6,7 +6,7 @@
  * Tech: Vanilla JS (Modular Controller-View-Model), SheetJS, CSS Variables
  */
 
-const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbysGjJilISZ2tk06uOMxcCPLTRgA70dZTVEv69mzrEsfXhnAPKwTUeG6YxanOcBkQC9Jg/exec';
+const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbyFYIRceWKPE2rA2gD0xgbChgkx2ELFqF2OQUG1TVjVlo8a4H7tZL9MxZKx6b0xS_5u-Q/exec';
 
 // ==========================================
 // 1. MODEL & STORE (Centralized State)
@@ -316,7 +316,7 @@ const Store = {
         const parsed = JSON.parse(raw);
         if (parsed.config) {
           this.config = { ...this.config, ...parsed.config };
-          if (!this.config.gas_api_url) {
+          if (!this.config.gas_api_url || this.config.gas_api_url.includes('AKfycbysGjJilISZ2tk0')) {
             this.config.gas_api_url = DEFAULT_GAS_URL;
           }
         }
