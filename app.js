@@ -6,7 +6,7 @@
  * Tech: Vanilla JS (Modular Controller-View-Model), SheetJS, CSS Variables
  */
 
-const DEFAULT_GAS_URL = 'https://script.google.com/a/macros/alimamischool.com/s/AKfycbysGjJilISZ2tk06uOMxcCPLTRgA70dZTVEv69mzrEsfXhnAPKwTUeG6YxanOcBkQC9Jg/exec';
+const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbysGjJilISZ2tk06uOMxcCPLTRgA70dZTVEv69mzrEsfXhnAPKwTUeG6YxanOcBkQC9Jg/exec';
 
 // ==========================================
 // 1. MODEL & STORE (Centralized State)
@@ -337,8 +337,16 @@ const Store = {
 // API SERVICE (REST Client for GAS Backend)
 // ==========================================
 const ApiService = {
+  cleanUrl(rawUrl) {
+    if (!rawUrl) return '';
+    let url = rawUrl.trim();
+    // Convert /a/macros/domain/ to standard /macros/
+    url = url.replace(/\/a\/macros\/[^\/]+\/s\//, '/macros/s/');
+    return url;
+  },
+
   async call(action, payload = {}, method = 'POST') {
-    const url = Store.config.gas_api_url;
+    const url = this.cleanUrl(Store.config.gas_api_url);
     if (!url) return null;
 
     try {
@@ -361,9 +369,21 @@ const ApiService = {
   },
 
   async fetchAll() {
-    const url = Store.config.gas_api_url;
+    const url = this.cleanUrl(Store.config.gas_api_url);
     if (!url) return null;
     try {
+      // First attempt single batch export
+      const batchRes = await fetch(`${url}?action=exportAllData`).then(r => r.json()).catch(() => null);
+      if (batchRes && batchRes.status === 'success' && batchRes.data) {
+        return {
+          resStudents: { status: 'success', data: batchRes.data.students || [] },
+          resConfig: { status: 'success', data: batchRes.data.config || {} },
+          resSubjects: { status: 'success', data: batchRes.data.subjects || [] },
+          resAudits: { status: 'success', data: batchRes.data.audits || [] }
+        };
+      }
+
+      // Fallback to separate endpoints
       const [resStudents, resConfig, resSubjects, resAudits] = await Promise.all([
         fetch(`${url}?action=getStudents`).then(r => r.json()).catch(() => null),
         fetch(`${url}?action=getConfig`).then(r => r.json()).catch(() => null),
