@@ -33089,9 +33089,60 @@ const INITIAL_OFFICIAL_GRADES = [
   }
 ];
 
+// ==========================================
+// OFFICIAL STAFF & USER ACCOUNTS (SMP AL-IMAM)
+// ==========================================
+const OFFICIAL_USERS = [
+  {
+    id: 'USR-01',
+    username: 'arif',
+    aliases: ['kepsek', 'kepalasekolah', 'arifrohman'],
+    password: '123',
+    name: 'Arif Rohman, S.Sos., M.Pd.',
+    shortName: 'Arif Rohman',
+    role: 'KEPSEK',
+    roleLabel: 'Kepala Sekolah',
+    roleBadge: 'badge-gold',
+    avatar: 'https://ui-avatars.com/api/?name=Arif+Rohman&background=10b981&color=ffffff&bold=true&size=128',
+    nip: '19750812 200003 1 002',
+    description: 'Pengesahan, Approval, Lembar Pemeriksaan Buku Induk, & Cetak Pengesahan'
+  },
+  {
+    id: 'USR-02',
+    username: 'amelia',
+    aliases: ['tu', 'tatausaha', 'admin'],
+    password: '123',
+    name: 'Amelia, S.E.',
+    shortName: 'Amelia',
+    role: 'TU',
+    roleLabel: 'Kepala Tata Usaha',
+    roleBadge: 'badge-mint',
+    avatar: 'https://ui-avatars.com/api/?name=Amelia&background=0ea573&color=ffffff&bold=true&size=128',
+    nip: '19880415 201201 2 004',
+    description: 'Akses Penuh (CRUD) Data Siswa, Pendaftaran, Kelola Ijazah SD/SMP, Mutasi & Arsip'
+  },
+  {
+    id: 'USR-03',
+    username: 'aditya',
+    aliases: ['operator', 'dapodik', 'ops'],
+    password: '123',
+    name: 'Aditya, S.Kom.',
+    shortName: 'Aditya',
+    role: 'OPERATOR',
+    roleLabel: 'Operator Dapodik',
+    roleBadge: 'badge-info',
+    avatar: 'https://ui-avatars.com/api/?name=Aditya&background=0284c7&color=ffffff&bold=true&size=128',
+    nip: '19920721 201602 1 007',
+    description: 'Sinkronisasi Data Dapodik, Validasi NISN/NIK, Leger & Nilai Rapor K13, Sinkron Foto'
+  }
+];
+
 const Store = {
-  // Current user role: 'TU' (Tata Usaha - Full CRUD) or 'KEPSEK' (Kepala Sekolah - Read/Approval)
-  currentRole: 'TU',
+  // Current user session & role
+  currentUser: OFFICIAL_USERS[0],
+  currentRole: 'KEPSEK',
+  users: OFFICIAL_USERS,
+
 
   // Config & School Identity
   config: {
@@ -33109,8 +33160,10 @@ const Store = {
     headmaster_name: 'Arif Rohman, S.Sos., M.Pd.',
     headmaster_nip: '19750812 200003 1 002',
     headmaster_signature_url: '',
-    tu_admin_name: 'Ahmad Fauzi, S.Kom.',
-    tu_admin_nip: '19880415 201201 1 004',
+    tu_admin_name: 'Amelia, S.E.',
+    tu_admin_nip: '19880415 201201 2 004',
+    operator_name: 'Aditya, S.Kom.',
+    operator_nip: '19920721 201602 1 007',
     academic_year: '2025/2026',
     active_semester: 'Ganjil',
     theme_preset: 'soft_green',
@@ -33178,7 +33231,8 @@ const Store = {
         students: this.students,
         grades: this.grades,
         audits: this.audits,
-        currentRole: this.currentRole
+        currentUser: this.currentUser,
+      currentRole: this.currentRole
       }));
     } catch (e) {
       console.warn('LocalStorage save failed:', e);
@@ -33209,7 +33263,13 @@ const Store = {
         }
         if (parsed.grades && parsed.grades.length > 0) this.grades = parsed.grades;
         if (parsed.audits && parsed.audits.length > 0) this.audits = parsed.audits;
-        if (parsed.currentRole) this.currentRole = parsed.currentRole;
+        if (parsed.currentUser) {
+        this.currentUser = parsed.currentUser;
+        this.currentRole = parsed.currentUser.role || 'KEPSEK';
+      } else if (parsed.currentRole) {
+        this.currentRole = parsed.currentRole;
+        this.currentUser = OFFICIAL_USERS.find(u => u.role === parsed.currentRole) || OFFICIAL_USERS[0];
+      }
       } else {
         this.students = INITIAL_OFFICIAL_STUDENTS.slice();
         this.grades = INITIAL_OFFICIAL_GRADES.slice();
@@ -33532,43 +33592,127 @@ const App = {
     if (viewId === 'view-settings') this.loadSettingsForm();
   },
 
-  // Toggle User Role (Kepsek vs TU)
-  toggleUserRole() {
-    Store.currentRole = Store.currentRole === 'TU' ? 'KEPSEK' : 'TU';
-    Store.saveLocal();
-    this.updateRoleUI();
-    this.showToast('Mode Pengguna dialihkan ke: ' + (Store.currentRole === 'KEPSEK' ? 'Kepala Sekolah' : 'Tata Usaha (Full CRUD)'), 'info');
+  // Open Login / Switch User Modal
+  openLoginModal() {
+    const modal = document.getElementById('modalLoginAuth');
+    if (modal) modal.classList.add('active');
   },
 
-  // Update UI Elements based on Role
-  updateRoleUI() {
-    const isKepsek = Store.currentRole === 'KEPSEK';
-    const roleText = document.getElementById('currentRoleText');
-    if (roleText) {
-      roleText.textContent = isKepsek ? 'Kepala Sekolah (Approval)' : 'Tata Usaha (Full)';
-      roleText.style.color = isKepsek ? '#2E4036' : '#10B981';
+  // Login as specific staff member (arif, amelia, aditya)
+  loginAs(key) {
+    const target = OFFICIAL_USERS.find(u => 
+      u.username === key || 
+      (u.aliases && u.aliases.includes(key.toLowerCase())) || 
+      u.role.toLowerCase() === key.toLowerCase()
+    );
+
+    if (target) {
+      Store.currentUser = target;
+      Store.currentRole = target.role;
+      Store.saveLocal();
+      this.updateRoleUI();
+      this.closeModal('modalLoginAuth');
+      this.showToast('Selamat datang, ' + target.name + ' (' + target.roleLabel + ')', 'success');
+      
+      // Auto-update audit form if on audit view
+      const auditFormName = document.getElementById('auditFormName');
+      const auditFormRole = document.getElementById('auditFormRole');
+      if (auditFormName) auditFormName.value = target.name;
+      if (auditFormRole) auditFormRole.value = target.roleLabel;
+    }
+  },
+
+  // Handle manual login with username and password
+  handleManualLogin() {
+    const userEl = document.getElementById('manualLoginUsername');
+    const passEl = document.getElementById('manualLoginPassword');
+    const username = (userEl ? userEl.value : '').trim().toLowerCase();
+    const password = (passEl ? passEl.value : '').trim();
+
+    if (!username) {
+      this.showToast('Silakan masukkan username atau nama pengguna.', 'warning');
+      return;
     }
 
-    // Hide or disable CRUD buttons in Kepsek mode
-    const crudElements = [
-      document.getElementById('btnQuickAdd'),
-      document.getElementById('navAddStudent'),
-      document.getElementById('btnImportExcelModal'),
-      document.getElementById('btnSaveGradesMatrix')
-    ];
+    const matched = OFFICIAL_USERS.find(u => 
+      u.username === username || 
+      (u.aliases && u.aliases.includes(username)) || 
+      u.name.toLowerCase().includes(username) ||
+      u.role.toLowerCase() === username
+    );
 
-    crudElements.forEach(el => {
-      if (el) {
-        el.style.opacity = isKepsek ? '0.5' : '1';
-        el.style.pointerEvents = isKepsek ? 'none' : 'auto';
-        if (isKepsek) {
-          el.setAttribute('title', 'Fitur dikunci dalam Mode Kepala Sekolah (Read-Only)');
-        } else {
-          el.removeAttribute('title');
-        }
+    if (matched) {
+      this.loginAs(matched.username);
+      if (userEl) userEl.value = '';
+      if (passEl) passEl.value = '';
+    } else {
+      this.showToast("Akun pengguna '" + username + "' tidak ditemukan. Pilih salah satu profil staf resmi.", 'danger');
+    }
+  },
+
+  // Toggle User Role (Cycle through: Arif Rohman -> Amelia -> Aditya)
+  toggleUserRole() {
+    const currentIndex = OFFICIAL_USERS.findIndex(u => u.role === Store.currentRole);
+    const nextIndex = (currentIndex + 1) % OFFICIAL_USERS.length;
+    this.loginAs(OFFICIAL_USERS[nextIndex].username);
+  },
+
+  // Update UI Elements based on Active User Session & Role
+  updateRoleUI() {
+    const u = Store.currentUser || OFFICIAL_USERS[0];
+    const isKepsek = u.role === 'KEPSEK';
+    const isTU = u.role === 'TU';
+    const isOperator = u.role === 'OPERATOR';
+
+    // Sidebar User Widget
+    const sideAvatar = document.getElementById('sidebarUserAvatar');
+    const sideName = document.getElementById('currentUserName');
+    const sideRole = document.getElementById('currentUserRoleBadge');
+    if (sideAvatar) sideAvatar.src = u.avatar;
+    if (sideName) sideName.textContent = u.name;
+    if (sideRole) {
+      sideRole.textContent = u.roleLabel;
+      if (isKepsek) {
+        sideRole.style.background = '#dcfce7';
+        sideRole.style.color = '#047857';
+      } else if (isTU) {
+        sideRole.style.background = '#daf5ec';
+        sideRole.style.color = '#065f46';
+      } else {
+        sideRole.style.background = '#e0f2fe';
+        sideRole.style.color = '#0369a1';
       }
-    });
+    }
 
+    // Topbar User Widget
+    const topAvatar = document.getElementById('topbarUserAvatar');
+    const topName = document.getElementById('topbarUserName');
+    const topRole = document.getElementById('topbarUserRole');
+    if (topAvatar) topAvatar.src = u.avatar;
+    if (topName) topName.textContent = u.shortName || u.name;
+    if (topRole) {
+      topRole.textContent = u.roleLabel;
+      topRole.style.color = isKepsek ? '#047857' : (isTU ? '#0ea573' : '#0284c7');
+    }
+
+    // Legacy role text compatibility
+    const roleText = document.getElementById('currentRoleText');
+    if (roleText) roleText.textContent = u.name + ' (' + u.roleLabel + ')';
+
+    // Role-based button access and permissions
+    const btnQuickAdd = document.getElementById('btnQuickAdd');
+    const navAdd = document.getElementById('navAddStudent');
+    const btnImportExcel = document.getElementById('btnImportExcelModal');
+    const btnSaveGrades = document.getElementById('btnSaveGradesMatrix');
+
+    if (btnQuickAdd) btnQuickAdd.style.display = isKepsek ? 'none' : 'inline-flex';
+    if (navAdd) navAdd.style.display = isKepsek ? 'none' : 'flex';
+    
+    if (btnImportExcel) {
+      btnImportExcel.style.display = isKepsek ? 'none' : 'inline-flex';
+    }
+
+    // Re-render student table to update action icons (Supervisi/Approval vs Full CRUD)
     this.renderStudentsTable();
   },
 
@@ -35914,8 +36058,11 @@ const ThemeEngine = {
 
 const AuditModule = {
   openAddAuditModal() {
-    document.getElementById('auditFormName').value = Store.config.headmaster_name;
-    document.getElementById('auditFormRole').value = 'Kepala Sekolah';
+    const u = Store.currentUser || OFFICIAL_USERS[0];
+    const nameEl = document.getElementById('auditFormName');
+    const roleEl = document.getElementById('auditFormRole');
+    if (nameEl) nameEl.value = u.name;
+    if (roleEl) roleEl.value = u.roleLabel;
     App.openModal('modalAddAudit');
   },
 

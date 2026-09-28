@@ -68,13 +68,16 @@
       </nav>
 
       <div class="sidebar-footer">
-        <div class="role-badge-box">
-          <div class="role-info">
-            <span class="role-label">Mode Pengguna</span>
-            <span class="role-name" id="currentRoleText">Tata Usaha (Full)</span>
+        <div class="role-badge-box" onclick="App.openLoginModal()" style="cursor: pointer;" title="Klik untuk Ganti Akun / Login">
+          <img id="sidebarUserAvatar" src="https://ui-avatars.com/api/?name=Arif+Rohman&background=10b981&color=ffffff&bold=true&size=128" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #0ea573;" alt="Avatar">
+          <div class="role-info" style="flex: 1; min-width: 0;">
+            <div class="role-name" id="currentUserName" style="font-size: 13px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Arif Rohman, S.Sos., M.Pd.</div>
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span class="role-label" id="currentUserRoleBadge" style="background: #daf5ec; color: #065f46; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Kepala Sekolah</span>
+            </div>
           </div>
-          <button class="btn btn-sm btn-outline" id="btnSwitchRole" title="Ganti Mode Pengguna">
-            <i class="fa-solid fa-repeat"></i>
+          <button class="btn btn-sm btn-outline" style="padding: 4px 8px;" onclick="event.stopPropagation(); App.openLoginModal();" title="Ganti Akun Pengguna">
+            <i class="fa-solid fa-right-left" style="color: #0ea573;"></i>
           </button>
         </div>
       </div>
@@ -102,6 +105,16 @@
 
           <div style="font-size: 13px; font-weight: 600; color: var(--dark-soft);" id="headerAcademicYear">
             TP: 2025/2026 (Ganjil)
+          </div>
+
+          <!-- User Profile Pill in Topbar -->
+          <div class="user-profile-pill" onclick="App.openLoginModal()" style="display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 4px 12px 4px 6px; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;" title="Ganti Akun / Login">
+            <img id="topbarUserAvatar" src="https://ui-avatars.com/api/?name=Arif+Rohman&background=10b981&color=ffffff&bold=true&size=128" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #0ea573;" alt="User">
+            <div style="line-height: 1.15; text-align: left;">
+              <div id="topbarUserName" style="font-size: 12px; font-weight: 700; color: #0f172a;">Arif Rohman</div>
+              <div id="topbarUserRole" style="font-size: 10px; color: #0ea573; font-weight: 700;">Kepala Sekolah</div>
+            </div>
+            <i class="fa-solid fa-chevron-down" style="font-size: 9px; color: #64748b; margin-left: 2px;"></i>
           </div>
 
           <button class="btn btn-sm btn-primary" id="btnQuickAdd">
@@ -1385,6 +1398,105 @@
         <button class="btn btn-primary" onclick="App.saveQuickDiplomaData()">
           <i class="fa-solid fa-floppy-disk"></i> Simpan Berkas Ijazah
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LOGIN & MULTI-ROLE AUTHENTICATION -->
+  <div class="modal-overlay" id="modalLoginAuth">
+    <div class="modal-card modal-lg">
+      <div class="modal-header" style="border-bottom: 1px solid #e2e8f0;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <img src="https://alimamischool.com/wp-content/uploads/2020/08/Al-Imam-Islamic-School-alimamischool.com-sekolah-sunnah-logo.png" style="width: 38px; height: 38px; object-fit: contain;" alt="Logo">
+          <div>
+            <h3 class="app-card-title" style="margin: 0; font-size: 16px;">
+              Akses Masuk & Pilihan Akun Pengguna
+            </h3>
+            <div style="font-size: 12px; color: #64748b;">SMP Al-Imam Islamic School (AI IS)</div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="App.closeModal('modalLoginAuth')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body" style="padding: 24px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 13.5px; color: #475569;">
+            Pilih salah satu profil staf di bawah ini untuk <b>Akses Cepat 1-Klik</b> atau gunakan formulir login manual:
+          </div>
+        </div>
+
+        <!-- 3 Quick Login Cards Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          
+          <!-- 1. Kepala Sekolah: Arif Rohman -->
+          <div class="auth-role-card" onclick="App.loginAs('arif')" style="border: 2px solid #10b981; background: linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%); border-radius: 16px; padding: 18px; text-align: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);">
+            <div style="position: relative; display: inline-block; margin-bottom: 10px;">
+              <img src="https://ui-avatars.com/api/?name=Arif+Rohman&background=10b981&color=ffffff&bold=true&size=128" style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid #10b981;" alt="Arif Rohman">
+              <span style="position: absolute; bottom: 0; right: 0; background: #10b981; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 2px solid white;">👑</span>
+            </div>
+            <div style="font-weight: 800; font-size: 14px; color: #064e3b; margin-bottom: 2px;">Arif Rohman, S.Sos., M.Pd.</div>
+            <div style="font-size: 11px; color: #047857; font-weight: 700; background: #dcfce7; padding: 3px 10px; border-radius: 12px; display: inline-block; margin-bottom: 8px;">Kepala Sekolah</div>
+            <div style="font-size: 11.5px; color: #475569; line-height: 1.4; margin-bottom: 12px;">
+              Akses Supervisi, Lembar Pemeriksaan Buku Induk, Approval & Cetak Pengesahan
+            </div>
+            <button class="btn btn-sm btn-primary" style="width: 100%; border-radius: 10px; background: #10b981; border-color: #10b981;">
+              <i class="fa-solid fa-right-to-bracket"></i> Masuk sebagai Kepsek
+            </button>
+          </div>
+
+          <!-- 2. Tata Usaha: Amelia -->
+          <div class="auth-role-card" onclick="App.loginAs('amelia')" style="border: 2px solid #0ea573; background: linear-gradient(180deg, #ffffff 0%, #daf5ec 100%); border-radius: 16px; padding: 18px; text-align: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(14, 165, 115, 0.1);">
+            <div style="position: relative; display: inline-block; margin-bottom: 10px;">
+              <img src="https://ui-avatars.com/api/?name=Amelia&background=0ea573&color=ffffff&bold=true&size=128" style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid #0ea573;" alt="Amelia">
+              <span style="position: absolute; bottom: 0; right: 0; background: #0ea573; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 2px solid white;">💼</span>
+            </div>
+            <div style="font-weight: 800; font-size: 14px; color: #064e3b; margin-bottom: 2px;">Amelia, S.E.</div>
+            <div style="font-size: 11px; color: #047857; font-weight: 700; background: #dcfce7; padding: 3px 10px; border-radius: 12px; display: inline-block; margin-bottom: 8px;">Kepala Tata Usaha</div>
+            <div style="font-size: 11.5px; color: #475569; line-height: 1.4; margin-bottom: 12px;">
+              Akses Penuh (CRUD) Data Siswa, Pendaftaran, Kelola Ijazah SD/SMP, Mutasi & Arsip
+            </div>
+            <button class="btn btn-sm btn-primary" style="width: 100%; border-radius: 10px; background: #0ea573; border-color: #0ea573;">
+              <i class="fa-solid fa-right-to-bracket"></i> Masuk sebagai TU
+            </button>
+          </div>
+
+          <!-- 3. Operator Dapodik: Aditya -->
+          <div class="auth-role-card" onclick="App.loginAs('aditya')" style="border: 2px solid #0284c7; background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%); border-radius: 16px; padding: 18px; text-align: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);">
+            <div style="position: relative; display: inline-block; margin-bottom: 10px;">
+              <img src="https://ui-avatars.com/api/?name=Aditya&background=0284c7&color=ffffff&bold=true&size=128" style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid #0284c7;" alt="Aditya">
+              <span style="position: absolute; bottom: 0; right: 0; background: #0284c7; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 2px solid white;">💻</span>
+            </div>
+            <div style="font-weight: 800; font-size: 14px; color: #0c4a6e; margin-bottom: 2px;">Aditya, S.Kom.</div>
+            <div style="font-size: 11px; color: #0369a1; font-weight: 700; background: #e0f2fe; padding: 3px 10px; border-radius: 12px; display: inline-block; margin-bottom: 8px;">Operator Dapodik</div>
+            <div style="font-size: 11.5px; color: #475569; line-height: 1.4; margin-bottom: 12px;">
+              Sinkronisasi Dapodik, Validasi NISN/NIK, Leger & Nilai Rapor K13, Sinkron Foto
+            </div>
+            <button class="btn btn-sm btn-primary" style="width: 100%; border-radius: 10px; background: #0284c7; border-color: #0284c7;">
+              <i class="fa-solid fa-right-to-bracket"></i> Masuk sebagai Operator
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Manual Login Form Accordion -->
+        <div style="border-top: 1px dashed #cbd5e1; padding-top: 16px;">
+          <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 150px;">
+              <label class="form-label" style="font-size: 11.5px;">Username / Nama</label>
+              <input type="text" id="manualLoginUsername" class="form-control" placeholder="Contoh: arif / amelia / aditya">
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+              <label class="form-label" style="font-size: 11.5px;">Password / PIN</label>
+              <input type="password" id="manualLoginPassword" class="form-control" placeholder="Default: 123">
+            </div>
+            <button class="btn btn-outline" style="height: 42px;" onclick="App.handleManualLogin()">
+              <i class="fa-solid fa-key"></i> Masuk Manual
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
