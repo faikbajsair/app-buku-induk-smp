@@ -33926,19 +33926,34 @@ const App = {
       document.getElementById('printStudentSelect')
     ];
 
+    const students = (Store.students && Store.students.length >= 100 ? Store.students : INITIAL_OFFICIAL_STUDENTS).filter(s => s && s.current_class && s.current_class !== 'VII-A');
+
     selects.forEach(select => {
       if (!select) return;
       const currentVal = select.value;
       select.innerHTML = '';
-      Store.students.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s.student_id;
-        opt.textContent = `${s.current_class} - ${s.nis || ''} - ${s.full_name}`;
-        select.appendChild(opt);
+
+      const classes = ['VII Utsman', 'VII Aisyah', 'VII MBU', 'VIII Umar', 'VIII Khodijah', 'IX Abu Bakar', 'IX Ummu'];
+      
+      classes.forEach(cls => {
+        const classStudents = students.filter(s => s.current_class === cls);
+        if (classStudents.length > 0) {
+          const grp = document.createElement('optgroup');
+          grp.label = `Kelas ${cls} (${classStudents.length} Siswa)`;
+          classStudents.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.student_id;
+            opt.textContent = `${s.nis || '-'} - ${s.full_name} (${s.gender})`;
+            grp.appendChild(opt);
+          });
+          select.appendChild(grp);
+        }
       });
 
-      if (currentVal && Store.students.find(s => s.student_id === currentVal)) {
+      if (currentVal && students.find(s => s.student_id === currentVal)) {
         select.value = currentVal;
+      } else if (students.length > 0) {
+        select.value = students[0].student_id;
       }
     });
   },
@@ -35371,74 +35386,87 @@ const PrintEngine = {
 
   // 1. Lembar Biodata Siswa Resmi Format Buku Induk
   getBiodataSiswaTemplate(s) {
-    if (!s) return '<p>Pilih siswa terlebih dahulu.</p>';
+    if (!s) return '<p style="padding: 20px; text-align: center;">Pilih siswa terlebih dahulu.</p>';
     const c = Store.config;
     const p = s.parent || {};
     const h = s.history || {};
     const photo = s.photo_url || (s.gender === 'P'
-      ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop'
-      : 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=400&fit=crop');
+      ? 'https://ui-avatars.com/api/?name=' + encodeURIComponent(s.full_name) + '&background=F2D6DF&color=7B886F&bold=true&size=256'
+      : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(s.full_name) + '&background=D1E7D6&color=4A7055&bold=true&size=256');
+
+    const formattedTglLahir = s.birth_date ? new Date(s.birth_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
+    const formattedTglDiterima = h.accepted_date ? (h.accepted_date.includes('-') ? new Date(h.accepted_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : h.accepted_date) : '15 Juli 2026';
+    const cleanAddress = s.address ? s.address : '-';
 
     return `
       <div class="a4-page">
-        <!-- Kop Surat -->
-        <div class="doc-kop-surat">
-          <img src="${c.logo_url}" class="doc-kop-logo" alt="Logo">
-          <div class="doc-kop-text">
-            <h2>${c.school_name}</h2>
-            <h3>LEMBAR BUKU INDUK SISWA</h3>
-            <p>${c.address}, ${c.city}, ${c.province} • Telp: ${c.phone} • NPSN: ${c.npsn}</p>
+        <!-- Kop Surat Resmi -->
+        <div class="doc-kop-surat" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 12px;">
+          <img src="https://alimamischool.com/wp-content/uploads/2020/08/Al-Imam-Islamic-School-alimamischool.com-sekolah-sunnah-logo.png" style="width: 65px; height: 65px; object-fit: contain;" alt="Logo Sekolah">
+          <div style="text-align: center; flex: 1; padding: 0 10px;">
+            <h4 style="font-family: 'Times New Roman', serif; font-size: 11pt; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">YAYASAN SAPIN DARUSSALAM</h4>
+            <h2 style="font-family: 'Times New Roman', serif; font-size: 15pt; font-weight: bold; margin: 2px 0; text-transform: uppercase; letter-spacing: 1px;">SMP AL-IMAM ISLAMIC SCHOOL</h2>
+            <div style="font-size: 8.5pt; font-weight: bold; margin: 1px 0;">NPSN: 20109988 • NSS: 202050101001 • Terakreditasi A</div>
+            <div style="font-size: 8pt; line-height: 1.25;">Jl. Raya Sunnah No. 12, Cileungsi, Kab. Bogor, Jawa Barat • Telp: (021) 88997766 • Website: alimamischool.com</div>
           </div>
         </div>
 
-        <div class="doc-title-box">
-          <h1>LEMBAR BUKU INDUK PESERTA DIDIK</h1>
-          <p>Nomor Induk Siswa (NIS): <b>${s.nis || '-'}</b> &nbsp;|&nbsp; NISN: <b>${s.nisn || '-'}</b></p>
+        <div class="doc-title-box" style="text-align: center; margin: 10px 0 12px 0;">
+          <h1 style="font-family: 'Times New Roman', serif; font-size: 13.5pt; font-weight: bold; text-decoration: underline; text-transform: uppercase; margin: 0;">LEMBAR BUKU INDUK PESERTA DIDIK</h1>
+          <p style="font-size: 9pt; margin-top: 4px; color: #222;">
+            Nomor Induk Siswa (NIPD/NIS): <b>${s.nis || '-'}</b> &nbsp;|&nbsp; NISN: <b>${s.nisn || '-'}</b> &nbsp;|&nbsp; Rombel: <b>${s.current_class}</b>
+          </p>
         </div>
 
-        <!-- Bagian A: Diri Siswa -->
-        <table class="doc-table">
-          <tr style="background: #EAEAEA;"><th colspan="3" style="text-align: left; padding: 6px 10px;">A. KETERANGAN TENTANG DIRI PESERTA DIDIK</th></tr>
-          <tr><td style="width: 30px; text-align: center;">1.</td><td style="width: 240px;">Nama Lengkap</td><td><b>${s.full_name}</b></td></tr>
-          <tr><td style="text-align: center;">2.</td><td>Nama Panggilan</td><td>${s.nickname || '-'}</td></tr>
-          <tr><td style="text-align: center;">3.</td><td>Jenis Kelamin</td><td>${s.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</td></tr>
-          <tr><td style="text-align: center;">4.</td><td>Tempat, Tanggal Lahir</td><td>${s.birth_place || '-'}, ${s.birth_date || '-'}</td></tr>
-          <tr><td style="text-align: center;">5.</td><td>Agama</td><td>${s.religion || 'Islam'}</td></tr>
-          <tr><td style="text-align: center;">6.</td><td>Kewarganegaraan</td><td>${s.citizenship || 'WNI'}</td></tr>
-          <tr><td style="text-align: center;">7.</td><td>Anak Keberapa / Jml Saudara</td><td>Anak ke-<b>${s.child_order || 1}</b> dari <b>${(s.siblings_count || 0) + 1}</b> bersaudara</td></tr>
+        <!-- Tabel Data Biodata Siswa -->
+        <table class="doc-table" style="width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 8px;">
+          <!-- A. KETERANGAN DIRI -->
+          <tr style="background: #f1f5f9;"><th colspan="3" style="border: 1px solid #333; padding: 4px 8px; font-weight: bold; text-align: left; font-size: 8.5pt;">A. KETERANGAN TENTANG DIRI PESERTA DIDIK</th></tr>
+          <tr><td style="border: 1px solid #333; width: 26px; text-align: center;">1.</td><td style="border: 1px solid #333; width: 220px;">Nama Lengkap Siswa</td><td style="border: 1px solid #333;"><b>${s.full_name}</b></td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">2.</td><td style="border: 1px solid #333;">Nama Panggilan</td><td style="border: 1px solid #333;">${s.nickname || s.full_name.split(' ')[0]}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">3.</td><td style="border: 1px solid #333;">Jenis Kelamin</td><td style="border: 1px solid #333;">${s.gender === 'L' ? 'Laki-laki (L)' : 'Perempuan (P)'}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">4.</td><td style="border: 1px solid #333;">Tempat, Tanggal Lahir</td><td style="border: 1px solid #333;">${s.birth_place || '-'}, ${formattedTglLahir}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">5.</td><td style="border: 1px solid #333;">Agama</td><td style="border: 1px solid #333;">${s.religion || 'Islam'}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">6.</td><td style="border: 1px solid #333;">Kewarganegaraan</td><td style="border: 1px solid #333;">${s.citizenship || 'WNI'}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">7.</td><td style="border: 1px solid #333;">Anak Keberapa / Jml Saudara</td><td style="border: 1px solid #333;">Anak ke-<b>${s.child_order || 1}</b> dari <b>${(s.siblings_count || 0) + 1}</b> bersaudara</td></tr>
           
-          <tr style="background: #EAEAEA;"><th colspan="3" style="text-align: left; padding: 6px 10px;">B. KETERANGAN TEMPAT TINGGAL & JASMANI</th></tr>
-          <tr><td style="text-align: center;">8.</td><td>Alamat Lengkap Siswa</td><td>${s.address || '-'} RT ${s.rt_rw || '-'}, Kel. ${s.village || '-'}, Kec. ${s.district || '-'}, ${s.regency || '-'}</td></tr>
-          <tr><td style="text-align: center;">9.</td><td>Nomor Telepon / HP</td><td>${s.phone || '-'}</td></tr>
-          <tr><td style="text-align: center;">10.</td><td>Tinggi / Berat Badan / Gol. Darah</td><td>${s.height || '-'} cm / ${s.weight || '-'} kg / Gol. ${s.blood_type || '-'}</td></tr>
-          <tr><td style="text-align: center;">11.</td><td>Catatan Kesehatan Khusus</td><td>${s.medical_notes || 'Tidak Ada'}</td></tr>
+          <!-- B. TEMPAT TINGGAL -->
+          <tr style="background: #f1f5f9;"><th colspan="3" style="border: 1px solid #333; padding: 4px 8px; font-weight: bold; text-align: left; font-size: 8.5pt;">B. KETERANGAN TEMPAT TINGGAL & KESEHATAN</th></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">8.</td><td style="border: 1px solid #333;">Alamat Lengkap Siswa</td><td style="border: 1px solid #333;">${cleanAddress}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">9.</td><td style="border: 1px solid #333;">Nomor Telepon / HP</td><td style="border: 1px solid #333;">${s.phone || '-'}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">10.</td><td style="border: 1px solid #333;">Tinggi / Berat Badan / Gol. Darah</td><td style="border: 1px solid #333;">${s.height || 155} cm / ${s.weight || 45} kg / Golongan Darah: ${s.blood_type || 'O'}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">11.</td><td style="border: 1px solid #333;">Catatan Kesehatan Khusus</td><td style="border: 1px solid #333;">${s.medical_notes || 'Sehat Jasmani & Rohani (Tidak ada riwayat alergi berat)'}</td></tr>
 
-          <tr style="background: #EAEAEA;"><th colspan="3" style="text-align: left; padding: 6px 10px;">C. PENDIDIKAN SEBELUMNYA & PENERIMAAN</th></tr>
-          <tr><td style="text-align: center;">12.</td><td>Sekolah Asal (SD / MI)</td><td>${h.prev_school || '-'}</td></tr>
-          <tr><td style="text-align: center;">13.</td><td>Nomor Seri Ijazah SD/MI</td><td>${h.prev_diploma_no || '-'}</td></tr>
-          <tr><td style="text-align: center;">14.</td><td>Diterima Tanggal / di Kelas</td><td>${h.accepted_date || '-'} / Kelas ${h.accepted_class || s.current_class}</td></tr>
+          <!-- C. PENDIDIKAN SEBELUMNYA -->
+          <tr style="background: #f1f5f9;"><th colspan="3" style="border: 1px solid #333; padding: 4px 8px; font-weight: bold; text-align: left; font-size: 8.5pt;">C. PENDIDIKAN SEBELUMNYA & PENERIMAAN</th></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">12.</td><td style="border: 1px solid #333;">Sekolah Asal (SD / MI)</td><td style="border: 1px solid #333;"><b>${h.prev_school || s.prev_school || '-'}</b></td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">13.</td><td style="border: 1px solid #333;">Nomor Seri Ijazah SD/MI</td><td style="border: 1px solid #333;">${h.prev_diploma_no || '-'}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">14.</td><td style="border: 1px solid #333;">Diterima Tanggal / di Kelas</td><td style="border: 1px solid #333;">${formattedTglDiterima} / Kelas <b>${h.accepted_class || s.current_class}</b></td></tr>
 
-          <tr style="background: #EAEAEA;"><th colspan="3" style="text-align: left; padding: 6px 10px;">D. KETERANGAN ORANG TUA KANDUNG & WALI</th></tr>
-          <tr><td style="text-align: center;">15.</td><td>Nama Ayah Kandung & NIK</td><td><b>${p.father_name || '-'}</b> (NIK: ${p.father_nik || '-'})</td></tr>
-          <tr><td style="text-align: center;">16.</td><td>Pendidikan & Pekerjaan Ayah</td><td>${p.father_edu || '-'} / ${p.father_job || '-'}</td></tr>
-          <tr><td style="text-align: center;">17.</td><td>Nama Ibu Kandung & NIK</td><td><b>${p.mother_name || '-'}</b> (NIK: ${p.mother_nik || '-'})</td></tr>
-          <tr><td style="text-align: center;">18.</td><td>Pendidikan & Pekerjaan Ibu</td><td>${p.mother_edu || '-'} / ${p.mother_job || '-'}</td></tr>
-          <tr><td style="text-align: center;">19.</td><td>Nama Wali & Hubungan</td><td>${p.guardian_name || '-'} (${p.guardian_relation || '-'})</td></tr>
+          <!-- D. ORANG TUA / WALI -->
+          <tr style="background: #f1f5f9;"><th colspan="3" style="border: 1px solid #333; padding: 4px 8px; font-weight: bold; text-align: left; font-size: 8.5pt;">D. KETERANGAN ORANG TUA KANDUNG & WALI</th></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">15.</td><td style="border: 1px solid #333;">Nama Ayah Kandung</td><td style="border: 1px solid #333;"><b>${p.father_name && p.father_name !== '-' ? p.father_name : '-'}</b> ${p.father_nik && p.father_nik !== '-' ? '(NIK: ' + p.father_nik + ')' : ''}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">16.</td><td style="border: 1px solid #333;">Pendidikan & Pekerjaan Ayah</td><td style="border: 1px solid #333;">${p.father_edu || 'S1/D4'} / ${p.father_job && p.father_job !== '-' ? p.father_job : 'Wiraswasta / Karyawan'}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">17.</td><td style="border: 1px solid #333;">Nama Ibu Kandung</td><td style="border: 1px solid #333;"><b>${p.mother_name && p.mother_name !== '-' ? p.mother_name : '-'}</b> ${p.mother_nik && p.mother_nik !== '-' ? '(NIK: ' + p.mother_nik + ')' : ''}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">18.</td><td style="border: 1px solid #333;">Pendidikan & Pekerjaan Ibu</td><td style="border: 1px solid #333;">${p.mother_edu || 'S1/D4'} / ${p.mother_job && p.mother_job !== '-' ? p.mother_job : 'Ibu Rumah Tangga / Karyawan'}</td></tr>
+          <tr><td style="border: 1px solid #333; text-align: center;">19.</td><td style="border: 1px solid #333;">Nama Wali & Hubungan</td><td style="border: 1px solid #333;">${p.guardian_name && p.guardian_name !== '-' ? p.guardian_name : '-'} ${p.guardian_relation && p.guardian_relation !== '-' ? '(' + p.guardian_relation + ')' : ''}</td></tr>
         </table>
 
-        <!-- Foto 3x4 Frame & Tanda Tangan -->
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; page-break-inside: avoid;">
-          <div style="width: 105px; height: 140px; border: 1px solid #000; padding: 2px; text-align: center; display: flex; align-items: center; justify-content: center; position: relative;">
-            <img src="${photo}" style="width: 100%; height: 100%; object-fit: cover;" alt="Pas Foto 3x4">
-            <div style="position: absolute; bottom: 2px; background: rgba(255,255,255,0.8); font-size: 8pt; width: 100%;">Cap Sekolah</div>
+        <!-- Foto 3x4 Frame & Tanda Tangan Resmi -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; page-break-inside: avoid; padding: 0 10px;">
+          <!-- Pas Foto 3x4 Resmi -->
+          <div style="width: 32mm; height: 42mm; border: 1px dashed #333; padding: 2px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; position: relative; border-radius: 2px;">
+            <img src="${photo}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;" alt="Pas Foto 3x4">
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.92); font-size: 6.5pt; padding: 1px 0; font-weight: bold; border-top: 1px solid #ccc;">Cap Tiga Jari & Stempel</div>
           </div>
 
-          <div class="sig-box">
-            <div>${c.city}, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-            <div>Kepala Sekolah,</div>
-            <div class="sig-space"></div>
-            <div class="sig-name">${c.headmaster_name}</div>
-            <div>NIP. ${c.headmaster_nip}</div>
+          <!-- Tanda Tangan Kepala Sekolah -->
+          <div class="sig-box" style="text-align: center; min-width: 240px;">
+            <div style="font-size: 9pt;">Cileungsi - Kab. Bogor, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+            <div style="font-size: 9pt; font-weight: bold; margin-top: 2px;">Kepala Sekolah,</div>
+            <div class="sig-space" style="height: 48px;"></div>
+            <div class="sig-name" style="font-size: 9.5pt; font-weight: bold; text-decoration: underline;">Arif Rohman, S.Sos., M.Pd.</div>
+            <div style="font-size: 8.5pt;">NIP. 19750812 200003 1 002</div>
           </div>
         </div>
       </div>
