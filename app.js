@@ -35750,14 +35750,14 @@ const SettingsModule = {
 const ThemeEngine = {
   presets: {
     soft_green: {
-      '--primary': '#88AB8E',
-      '--primary-hover': '#75977B',
-      '--primary-light': '#E7EFE8',
-      '--secondary': '#AFC8AD',
-      '--secondary-light': '#F0F5F0',
-      '--accent': '#EEE7DA',
-      '--dark': '#2E4036',
-      '--light-bg': '#F4F7F4'
+      '--primary': '#0ea573',
+      '--primary-hover': '#0b8a60',
+      '--primary-light': '#e6f7f0',
+      '--secondary': '#a7f3d0',
+      '--secondary-light': '#f0fdf4',
+      '--accent': '#6ee7b7',
+      '--dark': '#0f172a',
+      '--light-bg': '#daf5ec'
     },
     ocean_blue: {
       '--primary': '#6096B4',

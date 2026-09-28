@@ -116,18 +116,90 @@
 
         <!-- 1. VIEW DASHBOARD -->
         <section class="page-view active" id="view-dashboard">
-          <div class="page-header">
-            <div class="page-title">
-              <h1>Dashboard Ringkasan Buku Induk</h1>
-              <p>Analisis demografi siswa, rekapitulasi status buku induk, dan statistik akademik terkini.</p>
+          <!-- Top Page Header Card -->
+          <div class="app-card" style="padding: 20px 24px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+            <div>
+              <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">Dashboard Utama</h1>
+              <p style="font-size: 13px; color: #64748b; margin: 0;">Sistem Informasi Buku Induk & Penilaian Rapor Peserta Didik</p>
             </div>
-            <div style="display: flex; gap: 10px;">
-              <button class="btn btn-outline" onclick="App.navigateTo('view-print')">
-                <i class="fa-solid fa-file-pdf"></i> Cetak Rekapitulasi
-              </button>
-              <button class="btn btn-primary" onclick="App.syncWithBackend()">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="badge" style="background: #e6f7f0; color: #0ea573; font-weight: 700; padding: 6px 14px; border-radius: var(--radius-full); font-size: 12px;">
+                Yayasan: SMP IT AL-IMAM
+              </span>
+              <button class="btn btn-primary btn-sm" onclick="App.syncWithBackend()">
                 <i class="fa-solid fa-arrows-rotate"></i> Sinkron Data
               </button>
+            </div>
+          </div>
+
+          <!-- Hero Welcome Banner -->
+          <div class="app-card" style="padding: 28px 32px; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.01em;">
+              SMP ISLAM TERPADU AL-IMAM
+            </h2>
+            <p style="font-size: 13.5px; color: #475569; line-height: 1.6; max-width: 900px; margin: 0;">
+              Sistem administrasi buku induk dan penilaian rapor peserta didik di bawah naungan Yayasan. Kelola 159 data pokok siswa, arsip dokumen ijazah kelulusan, transkrip nilai K13 & Muatan Lokal, serta pencetakan lembar buku induk resmi secara otomatis.
+            </p>
+          </div>
+
+          <!-- Panduan Langkah Penggunaan Aplikasi -->
+          <div class="app-card" style="padding: 24px 28px; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+              <i class="fa-solid fa-book-open" style="color: #0ea573; font-size: 17px;"></i>
+              <h3 style="font-size: 15px; font-weight: 700; color: #0f172a;">Panduan Langkah Penggunaan Aplikasi</h3>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px;">
+              
+              <!-- Step 1 -->
+              <div class="guide-step-card" onclick="App.navigateTo('view-students')">
+                <div class="guide-step-header">
+                  <span class="guide-num">1</span>
+                  <span class="guide-tag tag-green">LANGKAH AWAL</span>
+                </div>
+                <div class="guide-step-title">Master Data Siswa</div>
+                <div class="guide-step-desc">Kelola 159 data siswa, biodata lengkap, identitas orang tua, dan dokumen ijazah.</div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="guide-step-card" onclick="App.navigateTo('view-students')">
+                <div class="guide-step-header">
+                  <span class="guide-num">2</span>
+                  <span class="guide-tag tag-mint">MASTER DATA</span>
+                </div>
+                <div class="guide-step-title">Kelola Rombel & Kelas</div>
+                <div class="guide-step-desc">Pemetaan rombel VII Utsman, VII Aisyah, VII MBU, VIII Umar, VIII Khodijah, IX Abu Bakar, IX Ummu.</div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="guide-step-card" onclick="App.navigateTo('view-grades')">
+                <div class="guide-step-header">
+                  <span class="guide-num">3</span>
+                  <span class="guide-tag tag-amber">PENILAIAN</span>
+                </div>
+                <div class="guide-step-title">Input & Nilai Rapor</div>
+                <div class="guide-step-desc">Input nilai K13 per mata pelajaran, aspek pengetahuan, keterampilan, dan sikap spiritual.</div>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="guide-step-card" onclick="App.navigateTo('view-print')">
+                <div class="guide-step-header">
+                  <span class="guide-num">4</span>
+                  <span class="guide-tag tag-rose">LAPORAN</span>
+                </div>
+                <div class="guide-step-title">Cetak Lembar & Ijazah</div>
+                <div class="guide-step-desc">Cetak lembar buku induk fisik, transkrip nilai raport semester, dan upload/cetak ijazah.</div>
+              </div>
+
+              <!-- Step 5 -->
+              <div class="guide-step-card" onclick="App.navigateTo('view-settings')">
+                <div class="guide-step-header">
+                  <span class="guide-num">5</span>
+                  <span class="guide-tag tag-purple">ADMIN</span>
+                </div>
+                <div class="guide-step-title">Kustomisasi & Sinkron</div>
+                <div class="guide-step-desc">Pemeriksaan rutin kepala sekolah, sinkronisasi Google Sheets, dan profil sekolah.</div>
+              </div>
+
             </div>
           </div>
 
