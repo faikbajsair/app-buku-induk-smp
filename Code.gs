@@ -289,7 +289,7 @@ function seedSampleStudentIfEmpty() {
       sampleId, '252607001', '0098765432', 'MUHAMMAD FAYYADH AR-RASYID', 'Fayyadh', 'L', 'Jakarta', '2011-05-14',
       'Islam', 'WNI', 1, 3, 'Jl. Mawar Raya No. 45 RT 03/05', '03/05', 'Harapan Jaya',
       'Sukamaju', 'Jakarta Timur', 'DKI Jakarta', '13420', '081234567890', 158, 48, 'O',
-      'Tidak ada riwayat alergi berat', 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=300&h=400&fit=crop', 'VII-A', 'Aktif', new Date(), new Date()
+      'Tidak ada riwayat alergi berat', 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=300&h=400&fit=crop', 'VII Utsman', 'Aktif', new Date(), new Date()
     ];
     studentSheet.getRange(2, 1, 1, sampleStudent.length).setValues([sampleStudent]);
 
@@ -303,7 +303,7 @@ function seedSampleStudentIfEmpty() {
 
     const historySheet = ss.getSheetByName(SHEETS.HISTORIES);
     const sampleHistory = [
-      sampleId, 'SD Islam Terpadu Nurul Fikri', 'DN-01/D-SD/13/0012345', '', '2025-07-15', 'VII-A', 'Prestasi Tahfidz Juz 30',
+      sampleId, 'SD Islam Terpadu Nurul Fikri', 'DN-01/D-SD/13/0012345', '', '2025-07-15', 'VII Utsman', 'Prestasi Tahfidz Juz 30',
       '', '', '', '', '', '25-01-07-001'
     ];
     historySheet.getRange(2, 1, 1, sampleHistory.length).setValues([sampleHistory]);
@@ -578,7 +578,7 @@ function saveStudentData(data) {
     data.blood_type || '',
     data.medical_notes || '',
     data.photo_url || '',
-    data.current_class || 'VII-A',
+    data.current_class || 'VII Utsman',
     data.status || 'Aktif',
     isNew ? now : (stdRows[stdRowIdx - 1][27] || now),
     now
@@ -647,7 +647,7 @@ function saveStudentData(data) {
     h.prev_diploma_no || '',
     h.prev_diploma_file || '',
     h.accepted_date || '',
-    h.accepted_class || data.current_class || 'VII-A',
+    h.accepted_class || data.current_class || 'VII Utsman',
     h.scholarships || '',
     h.mutation_out_date || '',
     h.mutation_out_reason || '',
