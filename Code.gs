@@ -854,7 +854,7 @@ function exportAllDatabaseData() {
  */
 function getDriveFolderPhotos(folderId) {
   try {
-    const fId = folderId || '1_n104erUV1AWG-JhOH8BAyXF196byKiu';
+    const fId = folderId || '1YBI9x7RW8CtIgsI-ydkKZR_EceWVKti1';
     const folder = DriveApp.getFolderById(fId);
     const files = folder.getFiles();
     const photos = [];
@@ -894,7 +894,7 @@ function getDriveFolderPhotos(folderId) {
  */
 function syncDrivePhotosData(folderId) {
   try {
-    const fId = folderId || '1_n104erUV1AWG-JhOH8BAyXF196byKiu';
+    const fId = folderId || '1YBI9x7RW8CtIgsI-ydkKZR_EceWVKti1';
     const folder = DriveApp.getFolderById(fId);
     const files = folder.getFiles();
     

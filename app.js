@@ -7013,7 +7013,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 47,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=ABDILLAH+ZULQARNAIN+ARRAZI&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1B9Lh4XWg-24WwisofcRN9lHvjHsjX52K",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7077,7 +7077,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 48,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=AL-FATTAH+IBNU+SYAM&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1YEfuaTT-4hSxVol7VpI6XHu_Nh-T93E-",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7141,7 +7141,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 49,
     "blood_type": "A",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=ALDENTA+DWIKA+PRADIPTA&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1YQbfmkid4j4ZwdXqJmK1Mz4Ob2aieuxB",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7333,7 +7333,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 52,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=Azka+Wafi+Athaya&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1YY_BFy45cdFdkRLAc9zAJT7q7WSjoeq5",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7397,7 +7397,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 53,
     "blood_type": "A",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=BIMASENA+NARARYA+MALIKUL&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1Yi67nQoYgwXVH4B61t0JLNiXf7GVQrx_",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7461,7 +7461,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 54,
     "blood_type": "B",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=DAFFA+RAHMAT+AZAMI&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1YmGjFkubI7AffNYt0Bp4gbCeccsTQNc5",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7525,7 +7525,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 55,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=GHAISAN+ARFA+RAVELLIO&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1YnSa89TefeReKzAVrRip9ytQANu-cmdN",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7589,7 +7589,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 56,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=Isa+Rafif+Nailu&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1YvKOwT0hGY5WEci3X1epVeLLTdxZ_ntU",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7717,7 +7717,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 43,
     "blood_type": "B",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=Lieve+Luthfi&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1YzKRRwBJdEq5k2oiFSbeAVnS8dKDlcgp",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7781,7 +7781,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 44,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=LIONEL+NAGAZKHA+IRAWAN+TOBING&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1Z0vZ2WGWd80uYoLG-fFmtZMAUuPMaoev",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7845,7 +7845,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 45,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=MARIQ+ATHALLA+MUNIARTO&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1ZF6wywIDjvJsov2FthE0BaA-flZMlBRQ",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7909,7 +7909,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 46,
     "blood_type": "A",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=MUHAMMAD+AL+BAIS+SAHID+ROKHIM&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1ZGs-v20Vxf07rc0ty2eCdMM18kJf-FgM",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -7973,7 +7973,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 47,
     "blood_type": "B",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=MUHAMMAD+AZKA+NAUFAL+SAPUTRA&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1ZHGYhVtWjBO-RFXePlYvUDKx7HgFmFdF",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -8037,7 +8037,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 48,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=MUHAMMAD+DAFFA+HAFIZHSYACH+AKBAR&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1ZKGpaO1V7ge8GX27RDR_77vdP0Faz951",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -8101,7 +8101,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 49,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=MUHAMMAD+HAIKAL+FURQON+ASYRAF&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1ZZKZshJgDitkuSnZMmEFPi3qIKwkN5bV",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -8229,7 +8229,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 51,
     "blood_type": "B",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=Muhammad+Syabil+A'zawawi+Oktaviansyah&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1ZbB5nlKUAjPCy4_yI0_g_rLcIffgOois",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -8357,7 +8357,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 53,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=Quarto+Kenzie+Prakoso&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1Zd1Ly0g-ySOZq0zsr5C3x2NhbSjoVf0-",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -8421,7 +8421,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 54,
     "blood_type": "A",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=Raka+Prasraya+Kayana&background=D1E7D6&color=4A7055&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1ZeZN2Cy37lR_tEJqL49ojIxlQvVvvbIw",
     "current_class": "IX Abu Bakar",
     "status": "Aktif",
     "parent": {
@@ -8549,7 +8549,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 56,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=ADELA+NOLLY+RIYANTO&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1ZjgVqLuYxY9BwecTzpu-avRYsIiBGEDS",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -8613,7 +8613,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 42,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=Aidah+Huriah+Mumtazah+Sugito&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1LITycYm1j3I55G7kGqWWvHMOHdKnwOPk",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -8677,7 +8677,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 43,
     "blood_type": "A",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=AISYAH+DAAMIYAA+NUR+SA'ADAH&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1_2Kp8pFcgDWdJQK0LY4lSri46GbyBuJM",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -8741,7 +8741,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 44,
     "blood_type": "B",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=ALIKA+RAMADINA+SETIAWAN&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1_5xg55kj3J9N9WUydYgu3eOmjE56KsoF",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -8805,7 +8805,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 45,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=ALISHA+MALAIKA+ARIFIANTO&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1guRWV8g5mkfTJ47SKqzPZaJKNE0--QXP",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -8869,7 +8869,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 46,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=ALISHA+PRIYANKA+ANINDITA&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1_Ca6AL6iUf4JgJHptM3Pbzps5_2r68B6",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9061,7 +9061,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 49,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=CHALISA+AFIYAH+ABDI&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1_Jw4keNTKDf9kXJqlhegQe9jxG2806D_",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9125,7 +9125,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 50,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=CHAYYARA+AILA+JANEETA&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1_Q_j2NiWUnmOrRMNxi9FaFcDF_NAOgg8",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9189,7 +9189,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 51,
     "blood_type": "A",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=ESHAL+CALYSTA&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1_ScuF3VtD2GSy0q55pfBF9pIS8o5_PAW",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9253,7 +9253,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 52,
     "blood_type": "B",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=FALISHA+JASMINE+BUDIMAN&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1_VOgZFxPur5Y3whu7JdQ1fRqNmVXVeXm",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9317,7 +9317,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 53,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=FIRLI+OKTAVIANI+HERMAWAN&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1LM6NhHKtB_eEx8lVI8IG-CVSxhyHJ4Rz",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9381,7 +9381,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 54,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=GHAIDA+ALIN+NADA&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1LJzWRtXTgZvutuSDdB8N7r0pTQFuJlpO",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9509,7 +9509,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 56,
     "blood_type": "B",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=JASMINE+ALLIYA+PUTRI&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1ab66e_BzdYEtKRqiCAJ7RaAeFvCmo0mM",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9573,7 +9573,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 42,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=JASMINE+NADIAH+WARDHANI&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1LNKhMQaq8Ywz4a4rYr_5TTEtlXVk15gS",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9637,7 +9637,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 43,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=JIEHAN+SEKAR+MAHESWARI&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1LJqJigwZQDPH-4nnvIFQoU_VugVGABD4",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9701,7 +9701,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 44,
     "blood_type": "A",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=Makaila+Khanza+Azzahra&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1aXBFz8cO3rhOHKLvZ527kAgRnpiel30G",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9829,7 +9829,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 46,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=RADELLA+GITHA+OCTAVIANA&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1agaqrjmJJoMuf4tsTtW6sSdC_alIN2qv",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -9957,7 +9957,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 48,
     "blood_type": "A",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=RR.+SHOFIA+PUTERI+NIRWANI&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1alSFfclHa0EMs5udweMtRr9N71JOnZmq",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -10021,7 +10021,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 49,
     "blood_type": "B",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=SARAH+ZAKIYYA+SHALEH&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1akKAJWT6ESlLMK-xx3M460T8uO_IK7-_",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -10085,7 +10085,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 50,
     "blood_type": "O",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=SEYLA+ALEXANDRA+KAWENGIAN&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1agik1UDsIGau7IYBlwZ-8ZejBghALjiS",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -10149,7 +10149,7 @@ const INITIAL_OFFICIAL_STUDENTS = [
     "weight": 51,
     "blood_type": "AB",
     "medical_notes": "Sehat jasmani & rohani, tidak ada riwayat penyakit berat",
-    "photo_url": "https://ui-avatars.com/api/?name=SYAZANI+PUTRIGIY&background=F2D6DF&color=7B886F&bold=true&size=256",
+    "photo_url": "https://lh3.googleusercontent.com/d/1aiSAgJJqMbfF_P5GfEibMu6ee8W0y7Br",
     "current_class": "IX Ummu",
     "status": "Aktif",
     "parent": {
@@ -33173,7 +33173,7 @@ const Store = {
   // Save to LocalStorage
   saveLocal() {
     try {
-      localStorage.setItem('BUKU_INDUK_DATA_V5', JSON.stringify({
+      localStorage.setItem('BUKU_INDUK_DATA_V6', JSON.stringify({
         config: this.config,
         students: this.students,
         grades: this.grades,
@@ -33188,7 +33188,7 @@ const Store = {
   // Load from LocalStorage
   loadLocal() {
     try {
-      const raw = localStorage.getItem('BUKU_INDUK_DATA_V5');
+      const raw = localStorage.getItem('BUKU_INDUK_DATA_V6');
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed.config) {
