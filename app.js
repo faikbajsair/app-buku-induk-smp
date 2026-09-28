@@ -17,7 +17,7 @@ const Store = {
 
   // Config & School Identity
   config: {
-    school_name: 'SMP ISLAM TERPADU AL-IMAM',
+    school_name: 'SMP Al-Imam Islamic School (AI IS)',
     npsn: '20109988',
     nss: '202050101001',
     address: 'Jl. Raya Sunnah No. 12, Kel. Harapan Jaya, Kec. Sukamaju',
@@ -33169,7 +33169,7 @@ const Store = {
   // Save to LocalStorage
   saveLocal() {
     try {
-      localStorage.setItem('BUKU_INDUK_DATA_V2', JSON.stringify({
+      localStorage.setItem('BUKU_INDUK_DATA_V4', JSON.stringify({
         config: this.config,
         students: this.students,
         grades: this.grades,
@@ -33184,7 +33184,7 @@ const Store = {
   // Load from LocalStorage
   loadLocal() {
     try {
-      const raw = localStorage.getItem('BUKU_INDUK_DATA_V2');
+      const raw = localStorage.getItem('BUKU_INDUK_DATA_V4');
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed.config) {
@@ -33200,9 +33200,9 @@ const Store = {
           }
         }
         if (parsed.students && parsed.students.length >= 150) {
-          this.students = parsed.students;
+          this.students = parsed.students.filter(s => s && s.current_class && s.current_class !== 'VII-A');
         } else {
-          // Freshly load official 109 students dataset & sync
+          this.students = this.students.filter(s => s && s.current_class && s.current_class !== 'VII-A');
           this.saveLocal();
         }
         if (parsed.grades && parsed.grades.length > 0) this.grades = parsed.grades;
@@ -33595,10 +33595,10 @@ const App = {
     if (logoImg && Store.config.logo_url) logoImg.src = Store.config.logo_url;
 
     const schoolNameEl = document.getElementById('sidebarSchoolName');
-    if (schoolNameEl) schoolNameEl.textContent = Store.config.school_name || 'SMP BUKU INDUK';
+    if (schoolNameEl) schoolNameEl.textContent = Store.config.school_name || 'SMP Al-Imam Islamic School (AI IS)';
 
     const npsnEl = document.getElementById('sidebarNpsn');
-    if (npsnEl) npsnEl.textContent = 'NPSN: ' + (Store.config.npsn || '-');
+    if (npsnEl) npsnEl.textContent = 'Development by Al-Imam EduTech';
 
     const academicYearEl = document.getElementById('headerAcademicYear');
     if (academicYearEl) {
@@ -33676,8 +33676,13 @@ const App = {
       if (result) {
         let hasData = false;
         if (result.resStudents && result.resStudents.status === 'success' && Array.isArray(result.resStudents.data)) {
-          if (result.resStudents.data.length > 0) {
-            Store.students = result.resStudents.data;
+          const cleanBackend = result.resStudents.data.filter(s => s && s.current_class && s.current_class !== 'VII-A');
+          if (cleanBackend.length >= 100) {
+            Store.students = cleanBackend;
+          } else {
+            console.log('GAS returned sparse/dummy data (' + cleanBackend.length + ' records). Keeping official 159 student dataset.');
+            // Filter in-memory students to ensure no VII-A dummy
+            Store.students = Store.students.filter(s => s && s.current_class && s.current_class !== 'VII-A');
           }
           hasData = true;
         }
@@ -33723,13 +33728,17 @@ const App = {
     let mutasi = 0;
     let alumni = 0;
 
+    // Purge any dummy VII-A data
+    const validStudents = Store.students.filter(s => s && s.current_class && s.current_class !== 'VII-A');
+    Store.students = validStudents;
+
     const classCounts = {
       'VII Utsman': 0, 'VII Aisyah': 0, 'VII MBU': 0,
       'VIII Umar': 0, 'VIII Khodijah': 0,
       'IX Abu Bakar': 0, 'IX Ummu': 0
     };
 
-    students.forEach(s => {
+    validStudents.forEach(s => {
       if (s.gender === 'L') male++;
       if (s.gender === 'P') female++;
 
@@ -33742,8 +33751,6 @@ const App = {
       const cls = s.current_class;
       if (classCounts[cls] !== undefined) {
         classCounts[cls]++;
-      } else {
-        classCounts[cls] = (classCounts[cls] || 0) + 1;
       }
     });
 
