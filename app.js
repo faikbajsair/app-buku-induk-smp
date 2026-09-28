@@ -33418,6 +33418,14 @@ const App = {
 
   // Event Listeners for Navigation & Global actions
   setupEventListeners() {
+    // Close user dropdown on outside click
+    document.addEventListener('click', (e) => {
+      const wrapper = document.getElementById('topbarUserWrapper');
+      if (wrapper && !wrapper.contains(e.target)) {
+        this.closeUserDropdown();
+      }
+    });
+
     // Navigation Items
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', (e) => {
@@ -33592,6 +33600,21 @@ const App = {
     if (viewId === 'view-settings') this.loadSettingsForm();
   },
 
+  // Toggle Instant User Dropdown in Topbar
+  toggleUserDropdown(e) {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById('userDropdownMenu');
+    if (menu) {
+      const isVisible = menu.style.display === 'block';
+      menu.style.display = isVisible ? 'none' : 'block';
+    }
+  },
+
+  closeUserDropdown() {
+    const menu = document.getElementById('userDropdownMenu');
+    if (menu) menu.style.display = 'none';
+  },
+
   // Open Login / Switch User Modal
   openLoginModal() {
     const modal = document.getElementById('modalLoginAuth');
@@ -33698,6 +33721,12 @@ const App = {
     // Legacy role text compatibility
     const roleText = document.getElementById('currentRoleText');
     if (roleText) roleText.textContent = u.name + ' (' + u.roleLabel + ')';
+
+    // Dropdown active user text
+    const dropName = document.getElementById('dropdownActiveUserName');
+    const dropRole = document.getElementById('dropdownActiveUserRole');
+    if (dropName) dropName.textContent = u.name;
+    if (dropRole) dropRole.textContent = u.roleLabel;
 
     // Role-based button access and permissions
     const btnQuickAdd = document.getElementById('btnQuickAdd');
@@ -36111,3 +36140,15 @@ const AuditModule = {
 document.addEventListener('DOMContentLoaded', () => {
   App.init();
 });
+// ==========================================
+// 8. GLOBAL WINDOW EXPORTS
+// ==========================================
+window.App = App;
+window.Store = Store;
+window.Wizard = Wizard;
+window.GradesModule = GradesModule;
+window.PrintEngine = PrintEngine;
+window.ThemeEngine = ThemeEngine;
+window.AuditModule = AuditModule;
+window.OFFICIAL_USERS = OFFICIAL_USERS;
+

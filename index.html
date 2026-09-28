@@ -107,14 +107,62 @@
             TP: 2025/2026 (Ganjil)
           </div>
 
-          <!-- User Profile Pill in Topbar -->
-          <div class="user-profile-pill" onclick="App.openLoginModal()" style="display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 4px 12px 4px 6px; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;" title="Ganti Akun / Login">
-            <img id="topbarUserAvatar" src="https://ui-avatars.com/api/?name=Arif+Rohman&background=10b981&color=ffffff&bold=true&size=128" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #0ea573;" alt="User">
-            <div style="line-height: 1.15; text-align: left;">
-              <div id="topbarUserName" style="font-size: 12px; font-weight: 700; color: #0f172a;">Arif Rohman</div>
-              <div id="topbarUserRole" style="font-size: 10px; color: #0ea573; font-weight: 700;">Kepala Sekolah</div>
+          <!-- User Profile Dropdown & Modal Trigger in Topbar -->
+          <div style="position: relative;" id="topbarUserWrapper">
+            <div class="user-profile-pill" id="topbarUserPill" onclick="App.toggleUserDropdown(event)" style="display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1.5px solid #0ea573; padding: 4px 12px 4px 6px; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(14, 165, 115, 0.12);" title="Klik untuk Ganti Akun Pengguna">
+              <img id="topbarUserAvatar" src="https://ui-avatars.com/api/?name=Arif+Rohman&background=10b981&color=ffffff&bold=true&size=128" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #0ea573;" alt="User">
+              <div style="line-height: 1.15; text-align: left;">
+                <div id="topbarUserName" style="font-size: 12px; font-weight: 700; color: #0f172a;">Arif Rohman</div>
+                <div id="topbarUserRole" style="font-size: 10px; color: #0ea573; font-weight: 700;">Kepala Sekolah</div>
+              </div>
+              <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #0ea573; margin-left: 2px;"></i>
             </div>
-            <i class="fa-solid fa-chevron-down" style="font-size: 9px; color: #64748b; margin-left: 2px;"></i>
+
+            <!-- Instant User Dropdown Menu -->
+            <div id="userDropdownMenu" style="display: none; position: absolute; top: calc(100% + 8px); right: 0; width: 290px; background: #ffffff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); border: 1px solid #cbd5e1; z-index: 99999; overflow: hidden;">
+              <div style="background: linear-gradient(135deg, #e4f9f2 0%, #daf5ec 100%); padding: 12px 14px; border-bottom: 1px solid #c0ebd7;">
+                <div style="font-size: 10.5px; font-weight: 700; color: #065f46; text-transform: uppercase; letter-spacing: 0.5px;">Akun Aktif Saat Ini</div>
+                <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 2px;" id="dropdownActiveUserName">Arif Rohman, S.Sos., M.Pd.</div>
+                <div style="font-size: 11px; color: #047857; font-weight: 600;" id="dropdownActiveUserRole">Kepala Sekolah</div>
+              </div>
+
+              <div style="padding: 8px;">
+                <div style="font-size: 10.5px; font-weight: 700; color: #64748b; padding: 4px 8px; text-transform: uppercase;">Pilih Akun Staf (1-Klik):</div>
+                
+                <!-- Card 1: Arif Rohman -->
+                <div class="user-dropdown-item" onclick="App.loginAs('arif'); App.closeUserDropdown();" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease; margin-bottom: 2px;">
+                  <img src="https://ui-avatars.com/api/?name=Arif+Rohman&background=10b981&color=ffffff&bold=true&size=128" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;" alt="Arif">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 12.5px; font-weight: 700; color: #0f172a;">Arif Rohman, S.Sos., M.Pd.</div>
+                    <div style="font-size: 10.5px; color: #047857; font-weight: 600;">👑 Kepala Sekolah</div>
+                  </div>
+                </div>
+
+                <!-- Card 2: Amelia -->
+                <div class="user-dropdown-item" onclick="App.loginAs('amelia'); App.closeUserDropdown();" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease; margin-bottom: 2px;">
+                  <img src="https://ui-avatars.com/api/?name=Amelia&background=0ea573&color=ffffff&bold=true&size=128" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;" alt="Amelia">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 12.5px; font-weight: 700; color: #0f172a;">Amelia, S.E.</div>
+                    <div style="font-size: 10.5px; color: #0ea573; font-weight: 600;">💼 Kepala Tata Usaha</div>
+                  </div>
+                </div>
+
+                <!-- Card 3: Aditya -->
+                <div class="user-dropdown-item" onclick="App.loginAs('aditya'); App.closeUserDropdown();" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease;">
+                  <img src="https://ui-avatars.com/api/?name=Aditya&background=0284c7&color=ffffff&bold=true&size=128" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;" alt="Aditya">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 12.5px; font-weight: 700; color: #0f172a;">Aditya, S.Kom.</div>
+                    <div style="font-size: 10.5px; color: #0284c7; font-weight: 600;">💻 Operator Dapodik</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="border-top: 1px solid #e2e8f0; padding: 8px 10px; background: #f8fafc;">
+                <button class="btn btn-sm btn-outline" style="width: 100%; font-size: 11.5px;" onclick="App.closeUserDropdown(); App.openLoginModal();">
+                  <i class="fa-solid fa-sliders"></i> Dialog Akses Lengkap & Kredensial
+                </button>
+              </div>
+            </div>
           </div>
 
           <button class="btn btn-sm btn-primary" id="btnQuickAdd">
