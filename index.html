@@ -297,6 +297,9 @@
               <p>Kelola data pokok siswa, identitas orang tua/wali, riwayat pendidikan, dan status mutasi.</p>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn btn-outline" style="border-color: #0ea573; color: #0ea573; background: #e4f9f2;" onclick="App.openSyncDrivePhotosModal()">
+                <i class="fa-brands fa-google-drive" style="color: #0ea573;"></i> Sinkron Foto Drive
+              </button>
               <button class="btn btn-outline" id="btnExportExcel">
                 <i class="fa-solid fa-file-excel" style="color: #10B981;"></i> Ekspor Excel
               </button>
@@ -1381,6 +1384,55 @@
         <button class="btn btn-outline" onclick="App.closeModal('modalUploadDiploma')">Tutup</button>
         <button class="btn btn-primary" onclick="App.saveQuickDiplomaData()">
           <i class="fa-solid fa-floppy-disk"></i> Simpan Berkas Ijazah
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SINKRONISASI FOTO SISWA GOOGLE DRIVE -->
+  <div class="modal-overlay" id="modalSyncDrivePhotos">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3 class="app-card-title">
+          <i class="fa-brands fa-google-drive" style="color: #0ea573;"></i> Sinkronisasi Pas Foto Siswa Google Drive
+        </h3>
+        <button class="btn btn-sm btn-outline" onclick="App.closeModal('modalSyncDrivePhotos')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="syncDriveModalBody">
+        <div style="background: linear-gradient(135deg, #e4f9f2 0%, #daf5ec 100%); padding: 16px 20px; border-radius: var(--radius-md); margin-bottom: 20px; border: 1px solid #c0ebd7;">
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: #0ea573; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 20px; flex-shrink: 0;">
+              <i class="fa-solid fa-images"></i>
+            </div>
+            <div>
+              <div style="font-weight: 700; color: #0f172a; font-size: 14px; margin-bottom: 3px;">
+                Pemetaan Otomatis Pas Foto Siswa Resmi
+              </div>
+              <div style="font-size: 12.5px; color: #334155; line-height: 1.5;">
+                Sistem memindai folder Google Drive <b>cropped smp</b> dan mencocokkan nama file foto (contoh: <code>ACHMED SYATHIR ELHAYBA.jpg</code>, <code>ALZENA AILA VARISHA.png</code>) secara otomatis ke seluruh 159 data siswa di buku induk.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" style="font-weight: 700;">Google Drive Folder ID / Link Folder <span class="required">*</span></label>
+          <input type="text" id="syncDriveFolderIdInput" class="form-control" value="1_n104erUV1AWG-JhOH8BAyXF196byKiu" placeholder="Masukkan Folder ID Google Drive atau link folder">
+          <small style="color: var(--dark-soft); font-size: 11.5px; display: block; margin-top: 5px;">
+            Default folder Google Drive ("cropped smp"): <code>1_n104erUV1AWG-JhOH8BAyXF196byKiu</code>
+          </small>
+        </div>
+
+        <div id="syncDriveResultContainer" style="display: none; margin-top: 20px;">
+          <!-- Live sync report -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="App.closeModal('modalSyncDrivePhotos')">Tutup</button>
+        <button class="btn btn-primary" id="btnStartSyncDrive" onclick="App.startSyncDrivePhotos()">
+          <i class="fa-solid fa-cloud-arrow-down"></i> Mulai Sinkronisasi Foto
         </button>
       </div>
     </div>

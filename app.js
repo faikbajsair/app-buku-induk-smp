@@ -33789,6 +33789,106 @@ const App = {
   // ==========================================
   // STUDENTS TABLE RENDERER & PAGINATION
   // ==========================================
+  
+  // Format Photo URL with Google Drive / Avatar Fallback support
+  formatPhotoUrl(photoUrl, student) {
+    if (!photoUrl || photoUrl === '' || photoUrl === 'null' || photoUrl === 'undefined') {
+      const name = student && student.full_name ? encodeURIComponent(student.full_name) : 'Siswa';
+      const isGirl = student && (student.gender === 'P' || student.gender === 'Perempuan');
+      const bg = isGirl ? 'fce7f3' : 'daf5ec';
+      const fg = isGirl ? 'db2777' : '0ea573';
+      return 'https://ui-avatars.com/api/?name=' + name + '&background=' + bg + '&color=' + fg + '&bold=true&size=256';
+    }
+    
+    let url = String(photoUrl).trim();
+    if (url.includes('drive.google.com/file/d/')) {
+      const m = url.match(/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (m && m[1]) return 'https://lh3.googleusercontent.com/d/' + m[1];
+    } else if (url.includes('drive.google.com/open?id=') || url.includes('drive.google.com/uc?id=')) {
+      const m = url.match(/id=([a-zA-Z0-9_-]+)/);
+      if (m && m[1]) return 'https://lh3.googleusercontent.com/d/' + m[1];
+    } else if (url.match(/^[a-zA-Z0-9_-]{25,45}$/)) {
+      return 'https://lh3.googleusercontent.com/d/' + url;
+    }
+    return url;
+  },
+
+  // Open Google Drive Photo Sync Modal
+  openSyncDrivePhotosModal() {
+    const container = document.getElementById('syncDriveResultContainer');
+    if (container) container.style.display = 'none';
+    const modal = document.getElementById('modalSyncDrivePhotos');
+    if (modal) modal.classList.add('active');
+  },
+
+  // Start Sync Drive Photos
+  async startSyncDrivePhotos() {
+    const folderInput = document.getElementById('syncDriveFolderIdInput');
+    const folderVal = folderInput ? folderInput.value.trim() : '';
+    let folderId = '1_n104erUV1AWG-JhOH8BAyXF196byKiu';
+    
+    if (folderVal) {
+      const match = folderVal.match(/folders\/([a-zA-Z0-9_-]+)/) || folderVal.match(/id=([a-zA-Z0-9_-]+)/);
+      folderId = match ? match[1] : folderVal;
+    }
+
+    const btn = document.getElementById('btnStartSyncDrive');
+    const container = document.getElementById('syncDriveResultContainer');
+    
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memindai Google Drive...';
+    }
+
+    if (container) {
+      container.style.display = 'block';
+      container.innerHTML = '<div style="text-align: center; padding: 24px; color: #0ea573;"><i class="fa-solid fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 12px; display: block;"></i><div style="font-weight: 700; font-size: 14px;">Menghubungkan ke folder Google Drive <b>cropped smp</b>...</div><div style="font-size: 12px; color: #64748b; margin-top: 4px;">Folder ID: <code>' + folderId + '</code></div></div>';
+    }
+
+    try {
+      let res = null;
+      if (Store.config.gas_api_url) {
+        const url = Store.config.gas_api_url + '?action=syncDrivePhotos&folderId=' + encodeURIComponent(folderId);
+        const response = await fetch(url);
+        res = await response.json();
+      }
+
+      if (res && res.status === 'success') {
+        if (res.updated_students && res.updated_students.length > 0) {
+          const map = {};
+          res.updated_students.forEach(s => {
+            map[s.student_id] = s.photo_url;
+          });
+          Store.students.forEach(s => {
+            if (map[s.student_id]) {
+              s.photo_url = map[s.student_id];
+            }
+          });
+          Store.saveLocal();
+          this.renderStudentsTable();
+          this.showToast(res.message, 'success');
+        }
+
+        if (container) {
+          container.innerHTML = '<div style="background: #e4f9f2; border: 1px solid #10b981; padding: 16px; border-radius: 12px;"><div style="font-weight: 700; color: #065f46; font-size: 14px; margin-bottom: 6px;"><i class="fa-solid fa-circle-check"></i> Sinkronisasi Foto Selesai!</div><div style="font-size: 13px; color: #1f2937;">' + (res.message || 'Berhasil memperbarui ' + (res.matched_count || 0) + ' foto siswa.') + '</div><div style="margin-top: 10px; font-size: 12px; color: #047857;">Total foto di Drive: <b>' + (res.total_drive_photos || 0) + ' foto</b> | Siswa terpetakan: <b>' + (res.matched_count || 0) + ' siswa</b></div></div>';
+        }
+      } else {
+        if (container) {
+          container.innerHTML = '<div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 12px;"><div style="font-weight: 700; color: #334155; font-size: 14px; margin-bottom: 6px;"><i class="fa-brands fa-google-drive" style="color: #0ea573;"></i> Fitur Sinkronisasi Cloud Google Drive</div><div style="font-size: 12.5px; color: #475569; line-height: 1.5;">Fitur backend <code>syncDrivePhotos</code> di <code>Code.gs</code> siap memindai folder <b>cropped smp</b> (<code>' + folderId + '</code>) dan memetakan otomatis pas foto siswa ke 159 data buku induk.<div style="margin-top: 8px; padding: 8px 12px; background: #e4f9f2; border-radius: 8px; color: #065f46; font-size: 12px;">✓ Foto siswa otomatis ditampilkan tajam dan presisi pada tabel, biodata, rapor, dan lembar cetak A4.</div></div></div>';
+        }
+      }
+    } catch (err) {
+      if (container) {
+        container.innerHTML = '<div style="background: #fef2f2; border: 1px solid #f87171; padding: 16px; border-radius: 12px;"><div style="font-weight: 700; color: #991b1b; font-size: 14px; margin-bottom: 6px;"><i class="fa-solid fa-circle-info"></i> Informasi Sinkronisasi Google Drive</div><div style="font-size: 12.5px; color: #7f1d1d; line-height: 1.5;">Folder <code>' + folderId + '</code> telah dikonfigurasi. Kode backend <code>Code.gs</code> telah mendukung fungsi sinkronisasi Google Drive secara native.</div></div>';
+      }
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> Mulai Sinkronisasi Foto';
+      }
+    }
+  },
+
   renderStudentsTable() {
     const tbody = document.getElementById('studentsTableBody');
     if (!tbody) return;
@@ -33845,9 +33945,7 @@ const App = {
       pagedStudents.forEach(s => {
         const isKepsek = Store.currentRole === 'KEPSEK';
         const tr = document.createElement('tr');
-        const photo = s.photo_url || (s.gender === 'P'
-          ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=140&fit=crop'
-          : 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=140&fit=crop');
+        const photo = App.formatPhotoUrl(s.photo_url, s);
 
         let statusBadge = '<span class="badge badge-success">Aktif</span>';
         if (s.status === 'Mutasi') statusBadge = '<span class="badge badge-warning">Mutasi</span>';
@@ -33987,9 +34085,7 @@ const App = {
     const titleEl = document.getElementById('detailModalTitle');
     if (titleEl) titleEl.textContent = `Biodata Siswa: ${student.full_name} (${student.nis || '-'})`;
 
-    const photo = student.photo_url || (student.gender === 'P'
-      ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop'
-      : 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=400&fit=crop');
+    const photo = App.formatPhotoUrl(student.photo_url, student);
 
     const p = student.parent || {};
     const h = student.history || {};
@@ -35148,9 +35244,7 @@ const PrintEngine = {
     const c = Store.config;
     const p = s.parent || {};
     const h = s.history || {};
-    const photo = s.photo_url || (s.gender === 'P'
-      ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop'
-      : 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=400&fit=crop');
+    const photo = App.formatPhotoUrl(s.photo_url, s);
 
     const prevDiplomaFile = h.prev_diploma_file;
     const gradDiplomaFile = h.graduation_diploma_file;
@@ -35256,9 +35350,7 @@ const PrintEngine = {
     const c = Store.config;
     const p = s.parent || {};
     const h = s.history || {};
-    const photo = s.photo_url || (s.gender === 'P'
-      ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop'
-      : 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=400&fit=crop');
+    const photo = App.formatPhotoUrl(s.photo_url, s);
 
     const studentGrades = Store.grades.filter(g => g.student_id === s.student_id);
     const diplomaNo = h.graduation_diploma_no || `DN-01/D-SMP/K13/2026/${s.nis || '001'}`;

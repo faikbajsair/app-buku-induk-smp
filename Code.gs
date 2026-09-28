@@ -71,6 +71,14 @@ function doGet(e) {
         responseData = exportAllDatabaseData();
         break;
 
+      case 'getDrivePhotos':
+        responseData = getDriveFolderPhotos(params.folderId || params.folder_id);
+        break;
+
+      case 'syncDrivePhotos':
+        responseData = syncDrivePhotosData(params.folderId || params.folder_id);
+        break;
+
       default:
         responseData = { status: 'error', message: 'Action not recognized: ' + action };
         break;
@@ -122,6 +130,14 @@ function doPost(e) {
 
       case 'bulkImportStudents':
         responseData = bulkImportStudentsData(postData.students);
+        break;
+
+      case 'syncDrivePhotos':
+        responseData = syncDrivePhotosData(postData.folderId || postData.folder_id || (e && e.parameter ? e.parameter.folderId : ''));
+        break;
+
+      case 'getDrivePhotos':
+        responseData = getDriveFolderPhotos(postData.folderId || postData.folder_id || (e && e.parameter ? e.parameter.folderId : ''));
         break;
 
       default:
@@ -830,4 +846,143 @@ function exportAllDatabaseData() {
       exported_at: new Date()
     }
   };
+}
+
+/**
+ * Scan Google Drive Folder for Student Photos and return matched metadata list
+ * Default Folder: 1_n104erUV1AWG-JhOH8BAyXF196byKiu (cropped smp)
+ */
+function getDriveFolderPhotos(folderId) {
+  try {
+    const fId = folderId || '1_n104erUV1AWG-JhOH8BAyXF196byKiu';
+    const folder = DriveApp.getFolderById(fId);
+    const files = folder.getFiles();
+    const photos = [];
+    
+    while (files.hasNext()) {
+      const file = files.next();
+      const name = file.getName();
+      const id = file.getId();
+      photos.push({
+        id: id,
+        name: name,
+        clean_name: name.replace(/\.(jpg|jpeg|png|webp|JPG|PNG|JPEG)$/i, '').trim(),
+        mimeType: file.getMimeType(),
+        thumbnail_url: 'https://drive.google.com/thumbnail?id=' + id + '&sz=w500',
+        direct_url: 'https://lh3.googleusercontent.com/d/' + id,
+        view_url: file.getUrl()
+      });
+    }
+
+    return {
+      status: 'success',
+      folder_id: fId,
+      folder_name: folder.getName(),
+      total_files: photos.length,
+      data: photos
+    };
+  } catch (err) {
+    return {
+      status: 'error',
+      message: 'Gagal membaca folder Google Drive: ' + err.toString()
+    };
+  }
+}
+
+/**
+ * Scan Google Drive folder and automatically update photo_url for all matching students in STUDENTS sheet
+ */
+function syncDrivePhotosData(folderId) {
+  try {
+    const fId = folderId || '1_n104erUV1AWG-JhOH8BAyXF196byKiu';
+    const folder = DriveApp.getFolderById(fId);
+    const files = folder.getFiles();
+    
+    // Build photo lookup map (normalized name -> photo URL)
+    const photoMap = {};
+    let totalPhotos = 0;
+    while (files.hasNext()) {
+      const file = files.next();
+      const rawName = file.getName();
+      const cleanName = rawName.replace(/\.(jpg|jpeg|png|webp|JPG|PNG|JPEG)$/i, '').trim().toLowerCase();
+      const directUrl = 'https://lh3.googleusercontent.com/d/' + file.getId();
+      
+      photoMap[cleanName] = {
+        id: file.getId(),
+        raw_name: rawName,
+        url: directUrl,
+        thumbnail: 'https://drive.google.com/thumbnail?id=' + file.getId() + '&sz=w500'
+      };
+      totalPhotos++;
+    }
+
+    const ss = getDb();
+    const sheet = ss.getSheetByName(SHEETS.STUDENTS);
+    if (!sheet) return { status: 'error', message: 'Sheet STUDENTS tidak ditemukan di spreadsheet' };
+
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return { status: 'error', message: 'Tidak ada data siswa' };
+
+    const headers = data[0];
+    const nameColIdx = headers.indexOf('full_name');
+    const photoColIdx = headers.indexOf('photo_url');
+
+    if (nameColIdx === -1 || photoColIdx === -1) {
+      return { status: 'error', message: 'Kolom full_name atau photo_url tidak ditemukan di sheet STUDENTS' };
+    }
+
+    let updatedCount = 0;
+    const updatedStudents = [];
+
+    for (let i = 1; i < data.length; i++) {
+      const studentName = String(data[i][nameColIdx] || '').trim();
+      if (!studentName) continue;
+      
+      const normStudentName = studentName.toLowerCase();
+      
+      let matched = photoMap[normStudentName];
+      if (!matched) {
+        // try fuzzy match ignoring whitespace and punctuation
+        const stripped = normStudentName.replace(/[^a-z0-9]/g, '');
+        for (let k in photoMap) {
+          if (k.replace(/[^a-z0-9]/g, '') === stripped) {
+            matched = photoMap[k];
+            break;
+          }
+        }
+      }
+
+      if (matched) {
+        sheet.getRange(i + 1, photoColIdx + 1).setValue(matched.url);
+        updatedCount++;
+        updatedStudents.push({
+          student_id: data[i][0],
+          name: studentName,
+          photo_url: matched.url
+        });
+      }
+    }
+
+    // Save audit log
+    saveAuditLog({
+      auditor_name: 'Sistem Sinkronisasi Drive',
+      auditor_role: 'Administrator IT',
+      action_type: 'Sinkronisasi Foto Siswa',
+      notes: 'Sinkronisasi otomatis foto siswa dari folder Google Drive (' + fId + '). Berhasil memperbarui ' + updatedCount + ' dari ' + totalPhotos + ' foto siswa.',
+      approval_status: 'Synced'
+    });
+
+    return {
+      status: 'success',
+      message: 'Berhasil menyinkronkan ' + updatedCount + ' foto siswa dari Google Drive (' + folder.getName() + ')!',
+      total_drive_photos: totalPhotos,
+      matched_count: updatedCount,
+      updated_students: updatedStudents
+    };
+  } catch (err) {
+    return {
+      status: 'error',
+      message: 'Gagal menyinkronkan foto Google Drive: ' + err.toString()
+    };
+  }
 }
