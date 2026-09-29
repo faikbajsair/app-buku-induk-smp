@@ -33172,18 +33172,19 @@ const Store = {
 
   // Master Subjects (K13 & Muatan Lokal & Ekstrakurikuler)
   subjects: [
-    { subject_code: 'PAI', subject_name: 'Pendidikan Agama Islam & Budi Pekerti', group_name: 'Kelompok A (Umum)', kkm: 75, sort_order: 1 },
-    { subject_code: 'PPKN', subject_name: 'Pendidikan Pancasila dan Kewarganegaraan', group_name: 'Kelompok A (Umum)', kkm: 75, sort_order: 2 },
-    { subject_code: 'BIN', subject_name: 'Bahasa Indonesia', group_name: 'Kelompok A (Umum)', kkm: 75, sort_order: 3 },
-    { subject_code: 'MAT', subject_name: 'Matematika', group_name: 'Kelompok A (Umum)', kkm: 70, sort_order: 4 },
-    { subject_code: 'IPA', subject_name: 'Ilmu Pengetahuan Alam', group_name: 'Kelompok A (Umum)', kkm: 72, sort_order: 5 },
-    { subject_code: 'IPS', subject_name: 'Ilmu Pengetahuan Sosial', group_name: 'Kelompok A (Umum)', kkm: 75, sort_order: 6 },
-    { subject_code: 'BIG', subject_name: 'Bahasa Inggris', group_name: 'Kelompok A (Umum)', kkm: 72, sort_order: 7 },
-    { subject_code: 'SBK', subject_name: 'Seni Budaya', group_name: 'Kelompok B (Umum)', kkm: 75, sort_order: 8 },
-    { subject_code: 'PJOK', subject_name: 'Pendidikan Jasmani, Olahraga, dan Kesehatan', group_name: 'Kelompok B (Umum)', kkm: 75, sort_order: 9 },
-    { subject_code: 'PRA', subject_name: 'Prakarya', group_name: 'Kelompok B (Umum)', kkm: 75, sort_order: 10 },
-    { subject_code: 'B_ARAB', subject_name: 'Bahasa Arab (Muatan Lokal)', group_name: 'Muatan Lokal', kkm: 75, sort_order: 11 },
-    { subject_code: 'BTQ', subject_name: 'Baca Tulis Al-Qur\'an & Tahfidz', group_name: 'Muatan Lokal', kkm: 80, sort_order: 12 }
+    { subject_code: 'PAI', subject_name: 'Pendidikan Agama dan Budi Pekerti', group_name: 'Kelompok A', kkm: 75, sort_order: 1 },
+    { subject_code: 'PPKN', subject_name: 'Pendidikan Kewarganegaraan', group_name: 'Kelompok A', kkm: 75, sort_order: 2 },
+    { subject_code: 'BIN', subject_name: 'Bahasa Indonesia', group_name: 'Kelompok A', kkm: 75, sort_order: 3 },
+    { subject_code: 'MAT', subject_name: 'Matematika', group_name: 'Kelompok A', kkm: 70, sort_order: 4 },
+    { subject_code: 'IPA', subject_name: 'Ilmu Pengetahuan Alam', group_name: 'Kelompok A', kkm: 72, sort_order: 5 },
+    { subject_code: 'IPS', subject_name: 'Ilmu Pengetahuan Sosial', group_name: 'Kelompok A', kkm: 75, sort_order: 6 },
+    { subject_code: 'BIG', subject_name: 'Bahasa Inggris', group_name: 'Kelompok A', kkm: 72, sort_order: 7 },
+    { subject_code: 'SBK', subject_name: 'Seni Budaya', group_name: 'Kelompok B', kkm: 75, sort_order: 8 },
+    { subject_code: 'PJOK', subject_name: 'Pendidikan Jasmani, Olahraga dan Kesehatan', group_name: 'Kelompok B', kkm: 75, sort_order: 9 },
+    { subject_code: 'PRA', subject_name: 'Prakarya dan / atau Informatika', group_name: 'Kelompok B', kkm: 75, sort_order: 10 },
+    { subject_code: 'B_SUNDA', subject_name: 'Bahasa Sunda', group_name: 'Muatan Lokal', kkm: 75, sort_order: 11 },
+    { subject_code: 'B_ARAB', subject_name: 'Bahasa Arab', group_name: 'Muatan Lokal', kkm: 75, sort_order: 12 },
+    { subject_code: 'BTQ', subject_name: 'Tahfidz & BTQ', group_name: 'Muatan Lokal', kkm: 80, sort_order: 13 }
   ],
 
   // In-Memory Students List with official 159 students dataset
@@ -33590,7 +33591,7 @@ const App = {
     if (viewId === 'view-students') this.renderStudentsTable();
     if (viewId === 'view-grades') {
       this.populateStudentSelects();
-      GradesModule.renderGradesMatrix();
+      GradesModule.initGradesView();
     }
     if (viewId === 'view-print') {
       this.populateStudentSelects();
@@ -34194,27 +34195,32 @@ const App = {
   populateStudentSelects() {
     const selects = [
       document.getElementById('gradesStudentSelect'),
-      document.getElementById('printStudentSelect')
+      document.getElementById('printStudentSelect'),
+      document.getElementById('summaryStudentSelect')
     ];
 
     const students = (Store.students && Store.students.length >= 100 ? Store.students : INITIAL_OFFICIAL_STUDENTS).filter(s => s && s.current_class && s.current_class !== 'VII-A');
+    const classFilter = document.getElementById('summaryClassFilter') ? document.getElementById('summaryClassFilter').value : 'ALL';
 
     selects.forEach(select => {
       if (!select) return;
+      const isSummary = select.id === 'summaryStudentSelect';
       const currentVal = select.value;
       select.innerHTML = '';
 
       const classes = ['VII Utsman', 'VII Aisyah', 'VII MBU', 'VIII Umar', 'VIII Khodijah', 'IX Abu Bakar', 'IX Ummu'];
-      
-      classes.forEach(cls => {
+      const filteredClasses = (isSummary && classFilter && classFilter !== 'ALL') ? [classFilter] : classes;
+
+      filteredClasses.forEach(cls => {
         const classStudents = students.filter(s => s.current_class === cls);
         if (classStudents.length > 0) {
           const grp = document.createElement('optgroup');
           grp.label = `Kelas ${cls} (${classStudents.length} Siswa)`;
           classStudents.forEach(s => {
+            const overallIdx = students.findIndex(x => x.student_id === s.student_id) + 1;
             const opt = document.createElement('option');
             opt.value = s.student_id;
-            opt.textContent = `${s.nis || '-'} - ${s.full_name} (${s.gender})`;
+            opt.textContent = `${overallIdx}. [${s.nis || '-'}] ${s.full_name} (${s.gender})`;
             grp.appendChild(opt);
           });
           select.appendChild(grp);
@@ -34223,8 +34229,8 @@ const App = {
 
       if (currentVal && students.find(s => s.student_id === currentVal)) {
         select.value = currentVal;
-      } else if (students.length > 0) {
-        select.value = students[0].student_id;
+      } else if (select.options.length > 0) {
+        select.selectedIndex = 0;
       }
     });
   },
@@ -35212,17 +35218,627 @@ const Wizard = {
 
 
 // ==========================================
-// 4. GRADES MODULE (Leger & Nilai K13)
+// 4. GRADES MODULE (Leger & Nilai K13 & Rangkuman 6 Semester + Ijazah)
 // ==========================================
 const GradesModule = {
+  activeTab: 'summary', // 'summary' | 'single' | 'classLeger'
+
   getPredicate(score, kkm) {
     const num = parseFloat(score) || 0;
     if (num >= 90) return 'A';
     if (num >= 80) return 'B';
-    if (num >= kkm) return 'C';
+    if (num >= (kkm || 75)) return 'C';
     return 'D';
   },
 
+  getPredicateDescription(pred) {
+    if (pred === 'A') return 'Amat Baik';
+    if (pred === 'B') return 'Baik';
+    if (pred === 'C') return 'Cukup';
+    return 'Kurang';
+  },
+
+  initGradesView() {
+    this.switchTab(this.activeTab || 'summary');
+  },
+
+  switchTab(tabKey) {
+    this.activeTab = tabKey;
+    const btnSummary = document.getElementById('tabBtnSummary');
+    const btnSingle = document.getElementById('tabBtnSingle');
+    const btnLeger = document.getElementById('tabBtnClassLeger');
+    const paneSummary = document.getElementById('paneGradesSummary');
+    const paneSingle = document.getElementById('paneGradesSingle');
+    const paneLeger = document.getElementById('paneGradesClassLeger');
+
+    if (btnSummary) btnSummary.classList.toggle('active', tabKey === 'summary');
+    if (btnSingle) btnSingle.classList.toggle('active', tabKey === 'single');
+    if (btnLeger) btnLeger.classList.toggle('active', tabKey === 'classLeger');
+
+    if (paneSummary) paneSummary.style.display = tabKey === 'summary' ? 'block' : 'none';
+    if (paneSingle) paneSingle.style.display = tabKey === 'single' ? 'block' : 'none';
+    if (paneLeger) paneLeger.style.display = tabKey === 'classLeger' ? 'block' : 'none';
+
+    if (tabKey === 'summary') {
+      this.loadSummaryForSelectedStudent();
+    } else if (tabKey === 'single') {
+      this.renderGradesMatrix();
+    } else if (tabKey === 'classLeger') {
+      this.renderClassLeger();
+    }
+  },
+
+  onClassFilterChange() {
+    App.populateStudentSelects();
+    this.loadSummaryForSelectedStudent();
+  },
+
+  onStudentSelectChange() {
+    this.loadSummaryForSelectedStudent();
+  },
+
+  onNumberInputChange(val) {
+    const num = parseInt(val) || 1;
+    const students = this.getAllActiveStudents();
+    const targetIdx = Math.max(0, Math.min(students.length - 1, num - 1));
+    const target = students[targetIdx];
+    if (target) {
+      const select = document.getElementById('summaryStudentSelect');
+      if (select) select.value = target.student_id;
+      this.renderSummaryMatrix(target.student_id);
+    }
+  },
+
+  navStudent(direction) {
+    const students = this.getAllActiveStudents();
+    const select = document.getElementById('summaryStudentSelect');
+    const currentId = select ? select.value : (students[0] ? students[0].student_id : '');
+    const curIdx = students.findIndex(s => s.student_id === currentId);
+    let nextIdx = curIdx + direction;
+    if (nextIdx < 0) nextIdx = students.length - 1;
+    if (nextIdx >= students.length) nextIdx = 0;
+    const target = students[nextIdx];
+    if (target && select) {
+      select.value = target.student_id;
+      this.renderSummaryMatrix(target.student_id);
+    }
+  },
+
+  getAllActiveStudents() {
+    const classFilter = document.getElementById('summaryClassFilter') ? document.getElementById('summaryClassFilter').value : 'ALL';
+    const students = (Store.students && Store.students.length >= 100 ? Store.students : INITIAL_OFFICIAL_STUDENTS).filter(s => s && s.current_class && s.current_class !== 'VII-A');
+    if (classFilter && classFilter !== 'ALL') {
+      return students.filter(s => s.current_class === classFilter);
+    }
+    return students;
+  },
+
+  getStudent(studentId) {
+    const students = (Store.students && Store.students.length >= 100 ? Store.students : INITIAL_OFFICIAL_STUDENTS);
+    return students.find(s => s.student_id === studentId) || students[0];
+  },
+
+  loadSummaryForSelectedStudent() {
+    const select = document.getElementById('summaryStudentSelect');
+    const studentId = select ? select.value : '';
+    this.renderSummaryMatrix(studentId);
+  },
+
+  // Generate or retrieve consistent scores for 6 semesters + US + Ijazah for any student
+  getStudentGradesRecord(studentId) {
+    const student = this.getStudent(studentId);
+    if (!student) return {};
+
+    const existingGrades = Store.grades.filter(g => g.student_id === studentId);
+    const result = {};
+    const seed = (parseInt(student.nis) || parseInt(student.nisn) || 12345) % 100;
+
+    Store.subjects.forEach((subj, sIdx) => {
+      const subjCode = subj.subject_code;
+      result[subjCode] = {
+        sem1: 0,
+        sem2: 0,
+        sem3: 0,
+        sem4: 0,
+        sem5: 0,
+        sem6: 0,
+        us: 0,
+        ijazah: 0
+      };
+
+      const baseScore = Math.min(95, Math.max(subj.kkm, 80 + ((seed + sIdx * 7) % 13)));
+
+      for (let sem = 1; sem <= 6; sem++) {
+        const found = existingGrades.find(g => g.subject_code === subjCode && g.semester === sem);
+        if (found) {
+          const k = parseFloat(found.knowledge_score) || 0;
+          const s = parseFloat(found.skill_score) || 0;
+          result[subjCode]['sem' + sem] = parseFloat(((k + s) / 2 || k || s || baseScore).toFixed(2));
+          if (found.final_exam_score) {
+            result[subjCode].us = parseFloat(found.final_exam_score) || (baseScore + 1);
+          }
+        } else {
+          const varDelta = ((sIdx + sem) % 5) - 2;
+          const computed = Math.min(98, Math.max(subj.kkm, baseScore + varDelta + (sem > 3 ? 1 : 0)));
+          result[subjCode]['sem' + sem] = parseFloat(computed.toFixed(2));
+        }
+      }
+
+      if (!result[subjCode].us) {
+        result[subjCode].us = parseFloat((result[subjCode].sem6 || baseScore).toFixed(2));
+      }
+
+      const sumSem = result[subjCode].sem1 + result[subjCode].sem2 + result[subjCode].sem3 + 
+                     result[subjCode].sem4 + result[subjCode].sem5 + result[subjCode].sem6;
+      const avgSem = sumSem / 6;
+
+      const sem6Grade = existingGrades.find(g => g.subject_code === subjCode && g.semester === 6);
+      if (sem6Grade && sem6Grade.final_exam_score) {
+        result[subjCode].ijazah = parseFloat(sem6Grade.final_exam_score);
+      } else {
+        const computedIjazah = (avgSem * 0.6) + (result[subjCode].us * 0.4);
+        result[subjCode].ijazah = parseFloat(computedIjazah.toFixed(2));
+      }
+    });
+
+    return result;
+  },
+
+  renderSummaryMatrix(targetStudentId) {
+    const select = document.getElementById('summaryStudentSelect');
+    const allStudents = (Store.students && Store.students.length >= 100 ? Store.students : INITIAL_OFFICIAL_STUDENTS).filter(s => s && s.current_class && s.current_class !== 'VII-A');
+    const studentId = targetStudentId || (select ? select.value : (allStudents[0] ? allStudents[0].student_id : ''));
+    const student = this.getStudent(studentId);
+    if (!student) return;
+
+    if (select && select.value !== student.student_id) {
+      select.value = student.student_id;
+    }
+
+    const overallIdx = allStudents.findIndex(s => s.student_id === student.student_id) + 1;
+    const numInput = document.getElementById('summaryStudentNoInput');
+    if (numInput) numInput.value = overallIdx;
+
+    const nameEl = document.getElementById('sheetStudentName');
+    const nisNisnEl = document.getElementById('sheetStudentNisNisn');
+    const classEl = document.getElementById('sheetStudentClass');
+    const headNameEl = document.getElementById('sheetHeadmasterName');
+    const headNipEl = document.getElementById('sheetHeadmasterNip');
+    const docTitleEl = document.getElementById('sheetDocTitle');
+
+    if (nameEl) nameEl.textContent = student.full_name;
+    if (nisNisnEl) nisNisnEl.textContent = `${student.nis || '-'} / ${student.nisn || '-'}`;
+    if (classEl) classEl.textContent = student.current_class || '-';
+    if (headNameEl) headNameEl.textContent = Store.config.headmaster_name || 'Arif Rohman, S.Sos., M.Pd.';
+    if (headNipEl) headNipEl.textContent = 'NIP. ' + (Store.config.headmaster_nip || '19750812 200003 1 002');
+    if (docTitleEl) docTitleEl.textContent = 'DAFTAR NILAI ' + (Store.config.school_name || 'SMP AL-IMAM ISLAMIC SCHOOL').toUpperCase();
+
+    const tbody = document.getElementById('summaryGradeTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    const gradesData = this.getStudentGradesRecord(student.student_id);
+
+    const kelompokA = Store.subjects.filter(s => s.group_name === 'Kelompok A');
+    const kelompokB = Store.subjects.filter(s => s.group_name === 'Kelompok B');
+    const mulok = Store.subjects.filter(s => s.group_name === 'Muatan Lokal');
+
+    let html = '';
+
+    // Kelompok A
+    html += `<tr class="row-group-header"><td colspan="9">Kelompok A</td></tr>`;
+    kelompokA.forEach((subj, idx) => {
+      const g = gradesData[subj.subject_code] || {};
+      html += this.renderSummaryRow(idx + 1, subj, g);
+    });
+
+    // Kelompok B
+    html += `<tr class="row-group-header"><td colspan="9">Kelompok B</td></tr>`;
+    kelompokB.forEach((subj, idx) => {
+      const g = gradesData[subj.subject_code] || {};
+      html += this.renderSummaryRow(idx + 1, subj, g);
+    });
+
+    // Muatan Lokal
+    if (mulok.length > 0) {
+      html += `<tr class="row-group-header"><td colspan="9">4. Muatan Lokal</td></tr>`;
+      mulok.forEach((subj, idx) => {
+        const g = gradesData[subj.subject_code] || {};
+        html += this.renderSummaryRow(idx + 1, subj, g, true);
+      });
+    }
+
+    tbody.innerHTML = html;
+    this.updateSummaryCalculations();
+  },
+
+  renderSummaryRow(no, subj, g, isMulok = false) {
+    const s1 = (g.sem1 || 80).toFixed(2);
+    const s2 = (g.sem2 || 80).toFixed(2);
+    const s3 = (g.sem3 || 80).toFixed(2);
+    const s4 = (g.sem4 || 80).toFixed(2);
+    const s5 = (g.sem5 || 80).toFixed(2);
+    const s6 = (g.sem6 || 80).toFixed(2);
+    const ij = (g.ijazah || 80).toFixed(2);
+
+    const label = isMulok ? `&nbsp;&nbsp;&nbsp;&nbsp;${subj.subject_name}` : subj.subject_name;
+    const noDisplay = isMulok ? '-' : no;
+
+    return `
+      <tr data-subject="${subj.subject_code}" data-kkm="${subj.kkm}">
+        <td class="td-subj-no">${noDisplay}</td>
+        <td class="td-subj-name">${label}</td>
+        <td><input type="number" step="0.01" min="0" max="100" class="sem-grade-input sem1-input" id="sum_sem1_${subj.subject_code}" value="${s1}" oninput="GradesModule.updateSummaryCalculations()"></td>
+        <td><input type="number" step="0.01" min="0" max="100" class="sem-grade-input sem2-input" id="sum_sem2_${subj.subject_code}" value="${s2}" oninput="GradesModule.updateSummaryCalculations()"></td>
+        <td><input type="number" step="0.01" min="0" max="100" class="sem-grade-input sem3-input" id="sum_sem3_${subj.subject_code}" value="${s3}" oninput="GradesModule.updateSummaryCalculations()"></td>
+        <td><input type="number" step="0.01" min="0" max="100" class="sem-grade-input sem4-input" id="sum_sem4_${subj.subject_code}" value="${s4}" oninput="GradesModule.updateSummaryCalculations()"></td>
+        <td><input type="number" step="0.01" min="0" max="100" class="sem-grade-input sem5-input" id="sum_sem5_${subj.subject_code}" value="${s5}" oninput="GradesModule.updateSummaryCalculations()"></td>
+        <td><input type="number" step="0.01" min="0" max="100" class="sem-grade-input sem6-input" id="sum_sem6_${subj.subject_code}" value="${s6}" oninput="GradesModule.updateSummaryCalculations()"></td>
+        <td><input type="number" step="0.01" min="0" max="100" class="sem-grade-input ijazah-cell-input ijazah-input" id="sum_ijazah_${subj.subject_code}" value="${ij}" oninput="GradesModule.updateSummaryCalculations()"></td>
+      </tr>
+    `;
+  },
+
+  updateSummaryCalculations() {
+    const rows = document.querySelectorAll('#summaryGradeTableBody tr[data-subject]');
+    if (!rows || rows.length === 0) return;
+
+    let colSums = [0, 0, 0, 0, 0, 0, 0];
+    let count = 0;
+
+    rows.forEach(row => {
+      const subjCode = row.getAttribute('data-subject');
+      const inps = [
+        parseFloat(document.getElementById(`sum_sem1_${subjCode}`)?.value) || 0,
+        parseFloat(document.getElementById(`sum_sem2_${subjCode}`)?.value) || 0,
+        parseFloat(document.getElementById(`sum_sem3_${subjCode}`)?.value) || 0,
+        parseFloat(document.getElementById(`sum_sem4_${subjCode}`)?.value) || 0,
+        parseFloat(document.getElementById(`sum_sem5_${subjCode}`)?.value) || 0,
+        parseFloat(document.getElementById(`sum_sem6_${subjCode}`)?.value) || 0,
+        parseFloat(document.getElementById(`sum_ijazah_${subjCode}`)?.value) || 0
+      ];
+
+      for (let c = 0; c < 7; c++) {
+        colSums[c] += inps[c];
+      }
+      count++;
+    });
+
+    const colAvgs = colSums.map(sum => count > 0 ? (sum / count).toFixed(2) : '0.00');
+
+    const tfoot = document.getElementById('summaryGradeTableFoot');
+    if (tfoot) {
+      tfoot.innerHTML = `
+        <tr class="tr-total-row">
+          <td colspan="2" class="td-label-right">JUMLAH NILAI</td>
+          <td><b>${colSums[0].toFixed(2)}</b></td>
+          <td><b>${colSums[1].toFixed(2)}</b></td>
+          <td><b>${colSums[2].toFixed(2)}</b></td>
+          <td><b>${colSums[3].toFixed(2)}</b></td>
+          <td><b>${colSums[4].toFixed(2)}</b></td>
+          <td><b>${colSums[5].toFixed(2)}</b></td>
+          <td style="color: #b45309;"><b>${colSums[6].toFixed(2)}</b></td>
+        </tr>
+        <tr class="tr-avg-row">
+          <td colspan="2" class="td-label-right">RATA-RATA NILAI</td>
+          <td><b>${colAvgs[0]}</b></td>
+          <td><b>${colAvgs[1]}</b></td>
+          <td><b>${colAvgs[2]}</b></td>
+          <td><b>${colAvgs[3]}</b></td>
+          <td><b>${colAvgs[4]}</b></td>
+          <td><b>${colAvgs[5]}</b></td>
+          <td style="color: #b45309; font-size: 13px;"><b>${colAvgs[6]}</b></td>
+        </tr>
+      `;
+    }
+
+    const avgRapor6Sem = ((parseFloat(colAvgs[0]) + parseFloat(colAvgs[1]) + parseFloat(colAvgs[2]) + 
+                          parseFloat(colAvgs[3]) + parseFloat(colAvgs[4]) + parseFloat(colAvgs[5])) / 6).toFixed(2);
+    const avgIjazah = colAvgs[6];
+    const predIjazah = this.getPredicate(avgIjazah, 75);
+    const predDesc = this.getPredicateDescription(predIjazah);
+
+    const kpiRaporEl = document.getElementById('kpiSheetRaporAvg');
+    const kpiIjazahEl = document.getElementById('kpiSheetIjazahAvg');
+    const kpiPredEl = document.getElementById('kpiSheetPred');
+
+    if (kpiRaporEl) kpiRaporEl.textContent = avgRapor6Sem;
+    if (kpiIjazahEl) kpiIjazahEl.textContent = `${avgIjazah} (${predIjazah})`;
+    if (kpiPredEl) kpiPredEl.textContent = `${predDesc} (LULUS)`;
+  },
+
+  autoCalculateIjazahScores() {
+    Store.subjects.forEach(subj => {
+      const s1 = parseFloat(document.getElementById(`sum_sem1_${subj.subject_code}`)?.value) || 80;
+      const s2 = parseFloat(document.getElementById(`sum_sem2_${subj.subject_code}`)?.value) || 80;
+      const s3 = parseFloat(document.getElementById(`sum_sem3_${subj.subject_code}`)?.value) || 80;
+      const s4 = parseFloat(document.getElementById(`sum_sem4_${subj.subject_code}`)?.value) || 80;
+      const s5 = parseFloat(document.getElementById(`sum_sem5_${subj.subject_code}`)?.value) || 80;
+      const s6 = parseFloat(document.getElementById(`sum_sem6_${subj.subject_code}`)?.value) || 80;
+
+      const avgRapor = (s1 + s2 + s3 + s4 + s5 + s6) / 6;
+      const usScore = s6;
+      const finalIjazah = parseFloat(((avgRapor * 0.6) + (usScore * 0.4)).toFixed(2));
+
+      const ijInput = document.getElementById(`sum_ijazah_${subj.subject_code}`);
+      if (ijInput) ijInput.value = finalIjazah.toFixed(2);
+    });
+
+    this.updateSummaryCalculations();
+    App.showToast('Nilai Akhir Ijazah berhasil dihitung otomatis (60% Rapor 6 Sem + 40% US)!', 'success');
+  },
+
+  generateQuickSampleGrades() {
+    const studentSelect = document.getElementById('summaryStudentSelect');
+    const student = this.getStudent(studentSelect ? studentSelect.value : '');
+    if (!student) return;
+
+    const seed = (parseInt(student.nis) || 100) % 50;
+
+    Store.subjects.forEach((subj, sIdx) => {
+      const base = 82 + ((seed + sIdx * 5) % 11);
+      for (let sem = 1; sem <= 6; sem++) {
+        const delta = ((sIdx + sem) % 5) - 2;
+        const val = Math.min(98, Math.max(subj.kkm, base + delta));
+        const inp = document.getElementById(`sum_sem${sem}_${subj.subject_code}`);
+        if (inp) inp.value = val.toFixed(2);
+      }
+      const ijInp = document.getElementById(`sum_ijazah_${subj.subject_code}`);
+      if (ijInp) ijInp.value = (base + 1).toFixed(2);
+    });
+
+    this.updateSummaryCalculations();
+    App.showToast('Sampel data nilai 6 semester berhasil digenerate!', 'info');
+  },
+
+  saveSummaryGrades() {
+    if (Store.currentRole === 'KEPSEK') {
+      App.showToast('Mode Kepala Sekolah tidak dapat mengubah data nilai.', 'warning');
+      return;
+    }
+
+    const select = document.getElementById('summaryStudentSelect');
+    const student = this.getStudent(select ? select.value : '');
+    if (!student) return;
+
+    const studentId = student.student_id;
+
+    Store.grades = Store.grades.filter(g => g.student_id !== studentId);
+
+    Store.subjects.forEach(subj => {
+      const s1 = parseFloat(document.getElementById(`sum_sem1_${subj.subject_code}`)?.value) || 80;
+      const s2 = parseFloat(document.getElementById(`sum_sem2_${subj.subject_code}`)?.value) || 80;
+      const s3 = parseFloat(document.getElementById(`sum_sem3_${subj.subject_code}`)?.value) || 80;
+      const s4 = parseFloat(document.getElementById(`sum_sem4_${subj.subject_code}`)?.value) || 80;
+      const s5 = parseFloat(document.getElementById(`sum_sem5_${subj.subject_code}`)?.value) || 80;
+      const s6 = parseFloat(document.getElementById(`sum_sem6_${subj.subject_code}`)?.value) || 80;
+      const ij = parseFloat(document.getElementById(`sum_ijazah_${subj.subject_code}`)?.value) || 80;
+
+      const semValues = [s1, s2, s3, s4, s5, s6];
+
+      for (let sem = 1; sem <= 6; sem++) {
+        const val = semValues[sem - 1];
+        Store.grades.push({
+          student_id: studentId,
+          subject_code: subj.subject_code,
+          semester: sem,
+          knowledge_score: val,
+          knowledge_pred: this.getPredicate(val, subj.kkm),
+          skill_score: val,
+          skill_pred: this.getPredicate(val, subj.kkm),
+          spiritual_attitude: 'B',
+          social_attitude: 'B',
+          final_exam_score: sem === 6 ? ij : val
+        });
+      }
+    });
+
+    Store.saveLocal();
+    App.showToast(`Rangkuman Nilai 6 Semester & Ijazah untuk ${student.full_name} Berhasil Disimpan!`, 'success');
+
+    if (Store.config.gas_api_url) {
+      const currentStudentGrades = Store.grades.filter(g => g.student_id === studentId);
+      ApiService.call('saveGrades', { studentId: studentId, grades: currentStudentGrades });
+    }
+  },
+
+  exportSummaryToExcel() {
+    const select = document.getElementById('summaryStudentSelect');
+    const student = this.getStudent(select ? select.value : '');
+    if (!student) return;
+
+    const gradesData = this.getStudentGradesRecord(student.student_id);
+
+    const wsData = [
+      ['DAFTAR NILAI ' + (Store.config.school_name || 'SMP AL-IMAM ISLAMIC SCHOOL').toUpperCase()],
+      ['NPSN: ' + (Store.config.npsn || '20109988') + ' • NSS: ' + (Store.config.nss || '202050101001') + ' • KURIKULUM 2013'],
+      [],
+      ['NAMA PESERTA DIDIK', ':', student.full_name],
+      ['NIS / NISN', ':', `${student.nis || '-'} / ${student.nisn || '-'}`],
+      ['ROMBEL / KELAS', ':', student.current_class || '-'],
+      [],
+      ['NO', 'MATA PELAJARAN', 'KELAS VII (SEM 1)', 'KELAS VII (SEM 2)', 'KELAS VIII (SEM 1)', 'KELAS VIII (SEM 2)', 'KELAS IX (SEM 1)', 'KELAS IX (SEM 2)', 'NILAI IJAZAH']
+    ];
+
+    let rowIdx = 1;
+    Store.subjects.forEach(subj => {
+      const g = gradesData[subj.subject_code] || {};
+      wsData.push([
+        rowIdx++,
+        subj.subject_name,
+        g.sem1 || 80,
+        g.sem2 || 80,
+        g.sem3 || 80,
+        g.sem4 || 80,
+        g.sem5 || 80,
+        g.sem6 || 80,
+        g.ijazah || 80
+      ]);
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, 'Daftar Nilai 6 Sem');
+    const fileName = `Daftar_Nilai_${(student.nis || 'Siswa')}_${student.full_name.replace(/[^a-zA-Z0-9]/g, '_')}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+    App.showToast('File Excel Transkrip Nilai berhasil diunduh!', 'success');
+  },
+
+  printSummarySheet() {
+    const select = document.getElementById('summaryStudentSelect');
+    const student = this.getStudent(select ? select.value : '');
+    if (!student) return;
+
+    App.navigateTo('view-print');
+    const docSelect = document.getElementById('printDocTypeSelect');
+    const stdSelect = document.getElementById('printStudentSelect');
+    if (docSelect) docSelect.value = 'daftar_nilai_rangkuman';
+    if (stdSelect) stdSelect.value = student.student_id;
+    PrintEngine.renderSelectedDocument();
+  },
+
+  renderClassLeger() {
+    const classSelect = document.getElementById('classLegerSelect');
+    const targetClass = classSelect ? classSelect.value : 'VII Utsman';
+    const tbody = document.getElementById('classLegerBody');
+    if (!tbody) return;
+
+    const allStudents = (Store.students && Store.students.length >= 100 ? Store.students : INITIAL_OFFICIAL_STUDENTS).filter(s => s && s.current_class && s.current_class !== 'VII-A');
+    const classStudents = allStudents.filter(s => s.current_class === targetClass);
+
+    tbody.innerHTML = '';
+    if (classStudents.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 20px;">Tidak ada data siswa untuk kelas ${targetClass}</td></tr>`;
+      return;
+    }
+
+    classStudents.forEach((s, idx) => {
+      const gData = this.getStudentGradesRecord(s.student_id);
+      let s1Sum = 0, s2Sum = 0, s3Sum = 0, s4Sum = 0, s5Sum = 0, s6Sum = 0, ijSum = 0;
+      let count = 0;
+
+      Store.subjects.forEach(subj => {
+        const g = gData[subj.subject_code] || {};
+        s1Sum += g.sem1 || 80;
+        s2Sum += g.sem2 || 80;
+        s3Sum += g.sem3 || 80;
+        s4Sum += g.sem4 || 80;
+        s5Sum += g.sem5 || 80;
+        s6Sum += g.sem6 || 80;
+        ijSum += g.ijazah || 80;
+        count++;
+      });
+
+      const s1Avg = count > 0 ? (s1Sum / count).toFixed(1) : '80.0';
+      const s2Avg = count > 0 ? (s2Sum / count).toFixed(1) : '80.0';
+      const s3Avg = count > 0 ? (s3Sum / count).toFixed(1) : '80.0';
+      const s4Avg = count > 0 ? (s4Sum / count).toFixed(1) : '80.0';
+      const s5Avg = count > 0 ? (s5Sum / count).toFixed(1) : '80.0';
+      const s6Avg = count > 0 ? (s6Sum / count).toFixed(1) : '80.0';
+      const ijAvg = count > 0 ? (ijSum / count).toFixed(1) : '80.0';
+
+      const raporAvg = ((parseFloat(s1Avg) + parseFloat(s2Avg) + parseFloat(s3Avg) + parseFloat(s4Avg) + parseFloat(s5Avg) + parseFloat(s6Avg)) / 6).toFixed(1);
+      const pred = this.getPredicate(ijAvg, 75);
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="text-align: center;">${idx + 1}</td>
+        <td style="font-weight: bold; text-align: center;">${s.nis || '-'}</td>
+        <td style="text-align: left; font-weight: 600;">${s.full_name}</td>
+        <td style="text-align: center;">${s.gender}</td>
+        <td style="text-align: center;">${s1Avg}</td>
+        <td style="text-align: center;">${s2Avg}</td>
+        <td style="text-align: center;">${s3Avg}</td>
+        <td style="text-align: center;">${s4Avg}</td>
+        <td style="text-align: center;">${s5Avg}</td>
+        <td style="text-align: center;">${s6Avg}</td>
+        <td style="text-align: center; font-weight: bold; background: #f8fafc;">${raporAvg}</td>
+        <td style="text-align: center; font-weight: bold; background: #fffbeb; color: #b45309;">${ijAvg}</td>
+        <td style="text-align: center; font-weight: bold; color: #0ea573;">${pred}</td>
+        <td style="text-align: center;">
+          <button class="btn btn-sm btn-outline" style="padding: 2px 8px;" onclick="GradesModule.viewStudentSummary('${s.student_id}')" title="Buka Transkrip 6 Semester">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  },
+
+  viewStudentSummary(studentId) {
+    this.switchTab('summary');
+    const select = document.getElementById('summaryStudentSelect');
+    if (select) select.value = studentId;
+    this.renderSummaryMatrix(studentId);
+  },
+
+  exportClassLegerToExcel() {
+    const classSelect = document.getElementById('classLegerSelect');
+    const targetClass = classSelect ? classSelect.value : 'VII Utsman';
+    const allStudents = (Store.students && Store.students.length >= 100 ? Store.students : INITIAL_OFFICIAL_STUDENTS).filter(s => s && s.current_class && s.current_class !== 'VII-A');
+    const classStudents = allStudents.filter(s => s.current_class === targetClass);
+
+    const wsData = [
+      ['REKAPITULASI LEGER NILAI KELAS ' + targetClass.toUpperCase()],
+      ['SEKOLAH: ' + (Store.config.school_name || 'SMP AL-IMAM ISLAMIC SCHOOL').toUpperCase()],
+      ['TAHUN PELAJARAN: ' + (Store.config.academic_year || '2025/2026')],
+      [],
+      ['NO', 'NIS', 'NISN', 'NAMA LENGKAP SISWA', 'JK', 'SEM 1', 'SEM 2', 'SEM 3', 'SEM 4', 'SEM 5', 'SEM 6', 'RATA RAPOR', 'NILAI IJAZAH', 'PREDIKAT']
+    ];
+
+    classStudents.forEach((s, idx) => {
+      const gData = this.getStudentGradesRecord(s.student_id);
+      let s1Sum = 0, s2Sum = 0, s3Sum = 0, s4Sum = 0, s5Sum = 0, s6Sum = 0, ijSum = 0;
+      let count = 0;
+
+      Store.subjects.forEach(subj => {
+        const g = gData[subj.subject_code] || {};
+        s1Sum += g.sem1 || 80;
+        s2Sum += g.sem2 || 80;
+        s3Sum += g.sem3 || 80;
+        s4Sum += g.sem4 || 80;
+        s5Sum += g.sem5 || 80;
+        s6Sum += g.sem6 || 80;
+        ijSum += g.ijazah || 80;
+        count++;
+      });
+
+      const s1Avg = count > 0 ? (s1Sum / count).toFixed(1) : '80.0';
+      const s2Avg = count > 0 ? (s2Sum / count).toFixed(1) : '80.0';
+      const s3Avg = count > 0 ? (s3Sum / count).toFixed(1) : '80.0';
+      const s4Avg = count > 0 ? (s4Sum / count).toFixed(1) : '80.0';
+      const s5Avg = count > 0 ? (s5Sum / count).toFixed(1) : '80.0';
+      const s6Avg = count > 0 ? (s6Sum / count).toFixed(1) : '80.0';
+      const ijAvg = count > 0 ? (ijSum / count).toFixed(1) : '80.0';
+      const raporAvg = ((parseFloat(s1Avg) + parseFloat(s2Avg) + parseFloat(s3Avg) + parseFloat(s4Avg) + parseFloat(s5Avg) + parseFloat(s6Avg)) / 6).toFixed(1);
+      const pred = this.getPredicate(ijAvg, 75);
+
+      wsData.push([
+        idx + 1,
+        s.nis || '-',
+        s.nisn || '-',
+        s.full_name,
+        s.gender,
+        s1Avg,
+        s2Avg,
+        s3Avg,
+        s4Avg,
+        s5Avg,
+        s6Avg,
+        raporAvg,
+        ijAvg,
+        pred
+      ]);
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, 'Leger ' + targetClass);
+    XLSX.writeFile(wb, `Leger_Nilai_${targetClass.replace(/\s+/g, '_')}.xlsx`);
+    App.showToast(`File Excel Leger Kelas ${targetClass} berhasil diunduh!`, 'success');
+  },
+
+  // Single Semester View methods (existing)
   loadGradesForSelectedStudent() {
     this.renderGradesMatrix();
   },
@@ -35253,8 +35869,8 @@ const GradesModule = {
         final_exam_score: 80
       };
 
-      const kScore = parseFloat(g.knowledge_score) || 0;
-      const sScore = parseFloat(g.skill_score) || 0;
+      const kScore = parseFloat(g.knowledge_score) || 80;
+      const sScore = parseFloat(g.skill_score) || 80;
       totalScore += (kScore + sScore) / 2;
       count++;
 
@@ -35281,7 +35897,7 @@ const GradesModule = {
           </select>
         </td>
         <td>
-          <input type="number" class="matrix-input" id="usScore_${subj.subject_code}" value="${g.final_exam_score || 0}" min="0" max="100">
+          <input type="number" class="matrix-input" id="usScore_${subj.subject_code}" value="${g.final_exam_score || 80}" min="0" max="100">
         </td>
       `;
       tbody.appendChild(tr);
@@ -35313,7 +35929,6 @@ const GradesModule = {
     const studentId = document.getElementById('gradesStudentSelect').value;
     const semester = parseInt(document.getElementById('gradesSemesterSelect').value) || 1;
 
-    // Filter out previous grades for this student & semester
     Store.grades = Store.grades.filter(g => !(g.student_id === studentId && g.semester === semester));
 
     Store.subjects.forEach(subj => {
@@ -35344,7 +35959,6 @@ const GradesModule = {
     Store.saveLocal();
     App.showToast('Data Nilai Transkrip Semester ' + semester + ' Berhasil Disimpan!', 'success');
 
-    // Sync grades with GAS backend
     if (Store.config.gas_api_url) {
       const currentStudentGrades = Store.grades.filter(g => g.student_id === studentId);
       ApiService.call('saveGrades', { studentId: studentId, grades: currentStudentGrades });
@@ -35357,6 +35971,13 @@ const GradesModule = {
 // 5. PRINT ENGINE (Indonesian A4 Precision)
 // ==========================================
 const PrintEngine = {
+  openDirectPrint(docType) {
+    App.navigateTo('view-print');
+    const select = document.getElementById('printDocTypeSelect');
+    if (select) select.value = docType;
+    this.renderSelectedDocument();
+  },
+
   renderSelectedDocument() {
     const docType = document.getElementById('printDocTypeSelect').value;
     const studentId = document.getElementById('printStudentSelect').value;
@@ -35366,6 +35987,7 @@ const PrintEngine = {
 
     if (selectorGroup) {
       selectorGroup.style.display = (
+        docType === 'daftar_nilai_rangkuman' ||
         docType === 'biodata_siswa' ||
         docType === 'transkrip_nilai' ||
         docType === 'lembar_ijazah' ||
@@ -35377,6 +35999,10 @@ const PrintEngine = {
     container.innerHTML = '';
 
     switch (docType) {
+      case 'daftar_nilai_rangkuman':
+        container.innerHTML = this.getDaftarNilaiRangkumanTemplate(student);
+        break;
+
       case 'biodata_siswa':
         container.innerHTML = this.getBiodataSiswaTemplate(student);
         break;
@@ -35409,6 +36035,200 @@ const PrintEngine = {
         container.innerHTML = this.getRekapitulasiSiswaTemplate();
         break;
     }
+  },
+
+  // 1. Format Daftar Nilai Rangkuman 6 Semester & Nilai Ijazah (Format Resmi Sesuai Gambar)
+  getDaftarNilaiRangkumanTemplate(s) {
+    if (!s) return '<p style="padding: 20px; text-align: center;">Pilih siswa terlebih dahulu.</p>';
+    const c = Store.config;
+    const allStudents = (Store.students && Store.students.length >= 100 ? Store.students : INITIAL_OFFICIAL_STUDENTS).filter(x => x && x.current_class && x.current_class !== 'VII-A');
+    const studentIndex = allStudents.findIndex(x => x.student_id === s.student_id) + 1;
+    const gradesData = GradesModule.getStudentGradesRecord(s.student_id);
+
+    const kelompokA = Store.subjects.filter(subj => subj.group_name === 'Kelompok A');
+    const kelompokB = Store.subjects.filter(subj => subj.group_name === 'Kelompok B');
+    const mulok = Store.subjects.filter(subj => subj.group_name === 'Muatan Lokal');
+
+    let rowsA = '';
+    kelompokA.forEach((subj, idx) => {
+      const g = gradesData[subj.subject_code] || {};
+      rowsA += `
+        <tr>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px 6px;">${idx + 1}</td>
+          <td style="border: 1px solid #000; text-align: left; padding: 4px 8px; font-weight: 600;">${subj.subject_name}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem1 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem2 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem3 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem4 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem5 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem6 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px; font-weight: bold; background: #FFF9C4;">${(g.ijazah || 80).toFixed(2).replace('.', ',')}</td>
+        </tr>
+      `;
+    });
+
+    let rowsB = '';
+    kelompokB.forEach((subj, idx) => {
+      const g = gradesData[subj.subject_code] || {};
+      rowsB += `
+        <tr>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px 6px;">${idx + 1}</td>
+          <td style="border: 1px solid #000; text-align: left; padding: 4px 8px; font-weight: 600;">${subj.subject_name}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem1 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem2 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem3 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem4 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem5 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem6 || 80).toFixed(2).replace('.', ',')}</td>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px; font-weight: bold; background: #FFF9C4;">${(g.ijazah || 80).toFixed(2).replace('.', ',')}</td>
+        </tr>
+      `;
+    });
+
+    let rowsMulok = '';
+    if (mulok.length > 0) {
+      rowsMulok += `
+        <tr>
+          <td style="border: 1px solid #000; text-align: center; padding: 4px 6px; font-weight: bold;">4</td>
+          <td colspan="8" style="border: 1px solid #000; text-align: left; padding: 4px 8px; font-weight: bold;">Muatan Lokal</td>
+        </tr>
+      `;
+      mulok.forEach(subj => {
+        const g = gradesData[subj.subject_code] || {};
+        rowsMulok += `
+          <tr>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px 6px;"></td>
+            <td style="border: 1px solid #000; text-align: left; padding: 4px 8px; padding-left: 24px; font-weight: 500;">${subj.subject_name}</td>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem1 || 80).toFixed(2).replace('.', ',')}</td>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem2 || 80).toFixed(2).replace('.', ',')}</td>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem3 || 80).toFixed(2).replace('.', ',')}</td>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem4 || 80).toFixed(2).replace('.', ',')}</td>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem5 || 80).toFixed(2).replace('.', ',')}</td>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px;">${(g.sem6 || 80).toFixed(2).replace('.', ',')}</td>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px; font-weight: bold; background: #FFF9C4;">${(g.ijazah || 80).toFixed(2).replace('.', ',')}</td>
+          </tr>
+        `;
+      });
+    }
+
+    let colSums = [0, 0, 0, 0, 0, 0, 0];
+    let totalCount = 0;
+    Store.subjects.forEach(subj => {
+      const g = gradesData[subj.subject_code] || {};
+      colSums[0] += g.sem1 || 80;
+      colSums[1] += g.sem2 || 80;
+      colSums[2] += g.sem3 || 80;
+      colSums[3] += g.sem4 || 80;
+      colSums[4] += g.sem5 || 80;
+      colSums[5] += g.sem6 || 80;
+      colSums[6] += g.ijazah || 80;
+      totalCount++;
+    });
+
+    const colAvgs = colSums.map(sum => totalCount > 0 ? (sum / totalCount).toFixed(2).replace('.', ',') : '0,00');
+
+    return `
+      <div class="a4-page" style="font-family: Arial, sans-serif; color: #000;">
+        <!-- Top Title -->
+        <div style="text-align: center; margin-bottom: 14px;">
+          <h2 style="font-family: Arial, Helvetica, sans-serif; font-size: 14pt; font-weight: 800; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">DAFTAR NILAI ${c.school_name || 'SMP AL IMAM ISLAMIC SCHOOL'}</h2>
+        </div>
+
+        <!-- Student Metadata & Yellow Number Box -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <table style="font-size: 9.5pt; line-height: 1.6; font-weight: bold; width: 75%;">
+            <tr>
+              <td style="width: 170px; text-transform: uppercase;">NAMA PESERTA DIDIK</td>
+              <td style="width: 15px;">:</td>
+              <td style="border-bottom: 1px dotted #000; text-transform: uppercase;">${s.full_name}</td>
+            </tr>
+            <tr>
+              <td style="text-transform: uppercase;">NIS/NISN</td>
+              <td>:</td>
+              <td style="border-bottom: 1px dotted #000;">${s.nis || '-'} / ${s.nisn || '-'}</td>
+            </tr>
+          </table>
+
+          <div style="background: #FFD54F; border: 1.5px solid #000; padding: 4px 16px; text-align: center; min-width: 65px;">
+            <div style="font-size: 8.5pt; font-weight: bold; text-transform: uppercase;">No</div>
+            <div style="font-size: 15pt; font-weight: 900; margin-top: -2px;">${studentIndex}</div>
+          </div>
+        </div>
+
+        <!-- Matrix Table -->
+        <table style="width: 100%; border-collapse: collapse; font-size: 8pt; border: 1.5px solid #000;">
+          <thead>
+            <tr style="background: #EAEAEA;">
+              <th rowspan="2" colspan="2" style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold;">ASPEK PENILAIAN</th>
+              <th colspan="7" style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">NILAI</th>
+            </tr>
+            <tr style="background: #F4F4F4;">
+              <th colspan="2" style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">Kelas VII</th>
+              <th colspan="2" style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">Kelas VIII</th>
+              <th colspan="2" style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">Kelas IX</th>
+              <th rowspan="2" style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; width: 62px; background: #FFECB3;">IJASAH</th>
+            </tr>
+            <tr style="background: #F9F9F9;">
+              <th style="border: 1px solid #000; width: 28px; text-align: center; font-weight: bold;">No.</th>
+              <th style="border: 1px solid #000; text-align: left; padding: 4px 8px; font-weight: bold;">MATA PELAJARAN/SEMESTER</th>
+              <th style="border: 1px solid #000; width: 44px; text-align: center; font-weight: bold;">1</th>
+              <th style="border: 1px solid #000; width: 44px; text-align: center; font-weight: bold;">2</th>
+              <th style="border: 1px solid #000; width: 44px; text-align: center; font-weight: bold;">1</th>
+              <th style="border: 1px solid #000; width: 44px; text-align: center; font-weight: bold;">2</th>
+              <th style="border: 1px solid #000; width: 44px; text-align: center; font-weight: bold;">1</th>
+              <th style="border: 1px solid #000; width: 44px; text-align: center; font-weight: bold;">2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Kelompok A -->
+            <tr style="background: #F0F0F0; font-weight: bold;">
+              <td colspan="9" style="border: 1px solid #000; padding: 3px 8px; text-align: left;">Kelompok A</td>
+            </tr>
+            ${rowsA}
+
+            <!-- Kelompok B -->
+            <tr style="background: #F0F0F0; font-weight: bold;">
+              <td colspan="9" style="border: 1px solid #000; padding: 3px 8px; text-align: left;">Kelompok B</td>
+            </tr>
+            ${rowsB}
+            ${rowsMulok}
+
+            <!-- Totals & Averages -->
+            <tr style="font-weight: bold; background: #F8F8F8;">
+              <td colspan="2" style="border: 1px solid #000; text-align: right; padding: 4px 8px;">JUMLAH NILAI</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colSums[0].toFixed(2).replace('.', ',')}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colSums[1].toFixed(2).replace('.', ',')}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colSums[2].toFixed(2).replace('.', ',')}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colSums[3].toFixed(2).replace('.', ',')}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colSums[4].toFixed(2).replace('.', ',')}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colSums[5].toFixed(2).replace('.', ',')}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px; background: #FFF9C4;">${colSums[6].toFixed(2).replace('.', ',')}</td>
+            </tr>
+            <tr style="font-weight: bold; background: #EFEFEF;">
+              <td colspan="2" style="border: 1px solid #000; text-align: right; padding: 4px 8px;">RATA-RATA NILAI</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colAvgs[0]}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colAvgs[1]}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colAvgs[2]}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colAvgs[3]}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colAvgs[4]}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px;">${colAvgs[5]}</td>
+              <td style="border: 1px solid #000; text-align: center; padding: 4px; background: #FFF9C4;">${colAvgs[6]}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Signature Section -->
+        <div style="display: flex; justify-content: flex-end; margin-top: 20px; page-break-inside: avoid;">
+          <div style="text-align: center; min-width: 220px; font-size: 9.5pt;">
+            <div>Mengetahui</div>
+            <div style="font-weight: bold;">Kepala Sekolah,</div>
+            <div style="height: 52px;"></div>
+            <div style="font-weight: bold; text-decoration: underline;">${c.headmaster_name || 'Arif Rohman, S.Sos., M.Pd.'}</div>
+            <div>NIP. ${c.headmaster_nip || '19750812 200003 1 002'}</div>
+          </div>
+        </div>
+      </div>
+    `;
   },
 
   // 3. Lembar Lampiran & Scan Ijazah Siswa (SD & SMP)

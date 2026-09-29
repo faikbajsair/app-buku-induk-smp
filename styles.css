@@ -840,6 +840,449 @@ textarea.form-control {
   background: #FAFCFA;
 }
 
+/* ==========================================================
+   SUB-NAVIGATION TABS (Leger & Nilai)
+   ========================================================== */
+.subnav-tabs {
+  display: flex;
+  gap: 8px;
+  background: #FFFFFF;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  margin-bottom: 18px;
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.subnav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dark-soft);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.subnav-tab i {
+  font-size: 14px;
+  color: #8C9B90;
+}
+
+.subnav-tab:hover {
+  background: var(--secondary-light);
+  color: var(--dark);
+}
+
+.subnav-tab.active {
+  background: #0ea573;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(14, 165, 115, 0.25);
+}
+
+.subnav-tab.active i {
+  color: #FFFFFF;
+}
+
+/* ==========================================================
+   SHEET DOCUMENT VIEW (Rangkuman Nilai 1-6 & Ijazah)
+   ========================================================== */
+.sheet-document-card {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  padding: 24px 30px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.sheet-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 2px solid #334155;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.sheet-title-main h2 {
+  font-family: 'Times New Roman', serif;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #0f172a;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.sheet-title-main p {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+.sheet-student-meta-grid {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  row-gap: 6px;
+  column-gap: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  align-items: center;
+  min-width: 320px;
+}
+
+.meta-key {
+  text-transform: uppercase;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.meta-colon {
+  font-weight: bold;
+}
+
+.meta-value {
+  font-weight: 800;
+  color: #0f172a;
+  border-bottom: 1.5px dotted #94a3b8;
+  padding-bottom: 1px;
+}
+
+/* Yellow Student Number Box */
+.sheet-no-badge-box {
+  background: #FFD54F;
+  border: 2px solid #000000;
+  border-radius: 6px;
+  padding: 4px 12px;
+  text-align: center;
+  min-width: 75px;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sheet-no-badge-box .badge-title {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #000000;
+  line-height: 1;
+}
+
+.sheet-no-badge-box input {
+  width: 54px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  font-weight: 900;
+  text-align: center;
+  color: #000000;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+}
+
+.sheet-no-badge-box input:focus {
+  background: #FFF9C4;
+  border-radius: 3px;
+}
+
+/* ==========================================================
+   SUMMARY GRADE TABLE (6 Semester + Ijazah Matriks)
+   ========================================================== */
+.table-sheet-scroll {
+  overflow-x: auto;
+  border: 1.5px solid #000000;
+  margin-bottom: 18px;
+}
+
+.summary-grade-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  background: #FFFFFF;
+}
+
+.summary-grade-table th, 
+.summary-grade-table td {
+  border: 1px solid #000000;
+  padding: 6px 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.summary-grade-table thead tr:first-child th {
+  background: #E2E8F0;
+  font-weight: 800;
+  color: #0f172a;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.summary-grade-table thead tr:nth-child(2) th {
+  background: #F1F5F9;
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 12px;
+}
+
+.summary-grade-table thead tr:nth-child(3) th {
+  background: #F8FAFC;
+  font-weight: 700;
+  color: #334155;
+  font-size: 11.5px;
+  padding: 4px 6px;
+}
+
+.summary-grade-table thead th.th-ijazah-col {
+  background: #FEF3C7 !important;
+  color: #92400E !important;
+  font-weight: 900 !important;
+  font-size: 12px;
+}
+
+.summary-grade-table tbody tr.row-group-header td {
+  background: #F1F5F9;
+  font-weight: 800;
+  text-align: left;
+  padding: 6px 10px;
+  color: #0f172a;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.summary-grade-table tbody td.td-subj-name {
+  text-align: left;
+  font-weight: 600;
+  color: #0f172a;
+  min-width: 220px;
+}
+
+.summary-grade-table tbody td.td-subj-no {
+  font-weight: 700;
+  color: #334155;
+  width: 38px;
+}
+
+/* Cell Inputs */
+.sem-grade-input {
+  width: 58px;
+  padding: 4px 2px;
+  text-align: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #0f172a;
+  background: #FFFFFF;
+  outline: none;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.sem-grade-input:focus {
+  border-color: #0ea573;
+  background: #f0fdf4;
+  box-shadow: 0 0 0 2px rgba(14, 165, 115, 0.2);
+}
+
+.sem-grade-input.ijazah-cell-input {
+  background: #FFFBEB;
+  border-color: #F59E0B;
+  color: #B45309;
+  font-weight: 900;
+}
+
+.sem-grade-input.ijazah-cell-input:focus {
+  background: #FEF3C7;
+  border-color: #D97706;
+}
+
+/* Footer summary rows in table */
+.summary-grade-table tfoot tr.tr-total-row td {
+  background: #F8FAFC;
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 12px;
+}
+
+.summary-grade-table tfoot tr.tr-avg-row td {
+  background: #E2E8F0;
+  font-weight: 900;
+  color: #0f172a;
+  font-size: 12.5px;
+}
+
+.summary-grade-table tfoot tr td.td-label-right {
+  text-align: right;
+  padding-right: 14px;
+  text-transform: uppercase;
+}
+
+/* Footer Section of Sheet */
+.sheet-footer-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.sheet-kpi-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.kpi-sheet-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  min-width: 140px;
+}
+
+.kpi-sheet-box .kpi-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.kpi-sheet-box .kpi-num {
+  font-size: 17px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.sheet-sign-box {
+  text-align: center;
+  min-width: 220px;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.sheet-sign-box .sign-head {
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.sheet-sign-box .sign-space {
+  height: 52px;
+}
+
+.sheet-sign-box .sign-person {
+  font-weight: 900;
+  text-decoration: underline;
+  color: #0f172a;
+}
+
+.sheet-sign-box .sign-nip {
+  font-size: 12px;
+  color: #475569;
+}
+
+/* ==========================================================
+   SPREADSHEET-STYLE BOTTOM TAB BAR
+   ========================================================== */
+.spreadsheet-bottom-bar {
+  display: flex;
+  align-items: center;
+  background: #E2E8F0;
+  border-top: 1px solid #cbd5e1;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: 4px 8px;
+  gap: 6px;
+  overflow-x: auto;
+  margin: -24px -30px -24px -30px;
+  margin-top: 20px;
+}
+
+.sheet-tab-icon {
+  background: #FFFFFF;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  cursor: pointer;
+  font-size: 11px;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.sheet-tab-icon:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.sheet-tabs-scroll {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.sheet-tab-btn {
+  background: #F8FAFC;
+  border: 1px solid #cbd5e1;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #475569;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.sheet-tab-btn:hover {
+  background: #FFFFFF;
+  color: #0f172a;
+}
+
+.sheet-tab-btn.active {
+  background: #FFFFFF;
+  color: #0284c7;
+  border-color: #0284c7;
+  border-top: 2.5px solid #0284c7;
+  font-weight: 900;
+}
+
+.sheet-tab-btn i {
+  font-size: 9px;
+  opacity: 0.7;
+}
+
 /* Modals */
 .modal-overlay {
   position: fixed;

@@ -932,88 +932,329 @@
           <div class="page-header">
             <div class="page-title">
               <h1>Matriks Leger & Transkrip Nilai K13</h1>
-              <p>Kelola nilai pengetahuan, keterampilan, sikap spiritual/sosial semester 1–6, dan nilai akhir ijazah.</p>
+              <p>Kelola nilai per semester (1–6), transkrip rangkuman komprehensif, dan perhitungan nilai akhir ijazah.</p>
             </div>
-            <div style="display: flex; gap: 10px;">
-              <button class="btn btn-outline" onclick="App.printActiveStudentGrades()">
-                <i class="fa-solid fa-print"></i> Cetak Lembar Transkrip
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn btn-outline" onclick="GradesModule.printSummarySheet()">
+                <i class="fa-solid fa-print"></i> Cetak Daftar Nilai (A4)
               </button>
-              <button class="btn btn-primary" id="btnSaveGradesMatrix" onclick="GradesModule.saveActiveGrades()">
-                <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan Nilai
+              <button class="btn btn-success" onclick="GradesModule.exportSummaryToExcel()">
+                <i class="fa-solid fa-file-excel"></i> Ekspor Excel (.xlsx)
+              </button>
+              <button class="btn btn-primary" id="btnSaveGradesMatrix" onclick="GradesModule.saveSummaryGrades()">
+                <i class="fa-solid fa-floppy-disk"></i> Simpan Semua Perubahan
               </button>
             </div>
           </div>
 
-          <!-- Student & Semester Selector Toolbar -->
-          <div class="app-card" style="padding: 16px 20px; margin-bottom: 20px;">
-            <div class="form-grid" style="grid-template-columns: 2fr 1fr 1fr;">
-              <div class="form-group">
-                <label class="form-label">Pilih Peserta Didik</label>
-                <select id="gradesStudentSelect" class="form-control" onchange="GradesModule.loadGradesForSelectedStudent()">
-                  <!-- Dynamically populated -->
-                </select>
+          <!-- Sub-navigation Tabs -->
+          <div class="subnav-tabs">
+            <button class="subnav-tab active" id="tabBtnSummary" onclick="GradesModule.switchTab('summary')">
+              <i class="fa-solid fa-table-list"></i> Rangkuman Nilai 1–6 & Ijazah (Format Resmi)
+            </button>
+            <button class="subnav-tab" id="tabBtnSingle" onclick="GradesModule.switchTab('single')">
+              <i class="fa-solid fa-pen-to-square"></i> Input Detail Per Semester (KI-3/KI-4/Sikap)
+            </button>
+            <button class="subnav-tab" id="tabBtnClassLeger" onclick="GradesModule.switchTab('classLeger')">
+              <i class="fa-solid fa-users-rectangle"></i> Rekap Leger Seluruh Kelas (Massal)
+            </button>
+          </div>
+
+          <!-- TAB PANE 1: RANGKUMAN NILAI 6 SEMESTER & IJAZAH (DAFTAR NILAI RESMI) -->
+          <div id="paneGradesSummary">
+            <!-- Student & Filter Control Toolbar -->
+            <div class="app-card" style="padding: 16px 20px; margin-bottom: 20px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex: 1;">
+                  <div style="min-width: 170px;">
+                    <label class="form-label" style="margin-bottom: 4px; font-size: 11px;">Filter Rombel / Kelas</label>
+                    <select id="summaryClassFilter" class="form-control" onchange="GradesModule.onClassFilterChange()">
+                      <option value="ALL">Semua Kelas (159 Siswa)</option>
+                      <option value="VII Utsman">VII Utsman</option>
+                      <option value="VII Aisyah">VII Aisyah</option>
+                      <option value="VII MBU">VII MBU</option>
+                      <option value="VIII Umar">VIII Umar</option>
+                      <option value="VIII Khodijah">VIII Khodijah</option>
+                      <option value="IX Abu Bakar">IX Abu Bakar</option>
+                      <option value="IX Ummu">IX Ummu</option>
+                    </select>
+                  </div>
+                  <div style="flex: 1; min-width: 260px;">
+                    <label class="form-label" style="margin-bottom: 4px; font-size: 11px;">Pilih Peserta Didik</label>
+                    <select id="summaryStudentSelect" class="form-control" onchange="GradesModule.onStudentSelectChange()">
+                      <!-- Dynamically populated -->
+                    </select>
+                  </div>
+                  <div style="display: flex; gap: 6px; align-self: flex-end;">
+                    <button class="btn btn-outline btn-sm" onclick="GradesModule.navStudent(-1)" title="Siswa Sebelumnya">
+                      <i class="fa-solid fa-chevron-left"></i> Prev
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="GradesModule.navStudent(1)" title="Siswa Berikutnya">
+                      Next <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Yellow Student Number Box & Quick Actions -->
+                <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                  <div class="sheet-no-badge-box" title="Ketik nomor urut siswa untuk lompat cepat (1–159)">
+                    <div class="badge-title">No</div>
+                    <input type="number" id="summaryStudentNoInput" value="1" min="1" max="159" onchange="GradesModule.onNumberInputChange(this.value)">
+                  </div>
+
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="btn btn-outline btn-sm" onclick="GradesModule.autoCalculateIjazahScores()" title="Hitung nilai akhir ijazah otomatis dari nilai rata-rata rapor sem 1-6 dan Ujian Sekolah">
+                      <i class="fa-solid fa-calculator" style="color: #0ea573;"></i> Hitung Ijazah
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="GradesModule.generateQuickSampleGrades()" title="Generate nilai acak realistis (80-95) jika data semester lain belum lengkap">
+                      <i class="fa-solid fa-wand-magic-sparkles" style="color: #6366f1;"></i> Isi Nilai Cepat
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="GradesModule.saveSummaryGrades()">
+                      <i class="fa-solid fa-floppy-disk"></i> Simpan Nilai
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="form-label">Pilih Semester</label>
-                <select id="gradesSemesterSelect" class="form-control" onchange="GradesModule.renderGradesMatrix()">
-                  <option value="1">Semester 1 (Kls VII Ganjil)</option>
-                  <option value="2">Semester 2 (Kls VII Genap)</option>
-                  <option value="3">Semester 3 (Kls VIII Ganjil)</option>
-                  <option value="4">Semester 4 (Kls VIII Genap)</option>
-                  <option value="5">Semester 5 (Kls IX Ganjil)</option>
-                  <option value="6">Semester 6 (Kls IX Genap)</option>
-                  <option value="ALL">Semua Semester (Transkrip 6 Sem)</option>
-                </select>
+            </div>
+
+            <!-- SHEET DOCUMENT VIEW -->
+            <div class="sheet-document-card">
+              <!-- Sheet Header Top -->
+              <div class="sheet-header-top">
+                <div class="sheet-title-main">
+                  <h2 id="sheetDocTitle">DAFTAR NILAI SMP AL IMAM ISLAMIC SCHOOL</h2>
+                  <p id="sheetDocSubtitle">NPSN: 20109988 • NSS: 202050101001 • Terakreditasi A • Kurikulum 2013</p>
+                </div>
+
+                <!-- Quick Metadata -->
+                <div class="sheet-student-meta-grid">
+                  <span class="meta-key">NAMA PESERTA DIDIK</span>
+                  <span class="meta-colon">:</span>
+                  <span class="meta-value" id="sheetStudentName">-</span>
+
+                  <span class="meta-key">NIS/NISN</span>
+                  <span class="meta-colon">:</span>
+                  <span class="meta-value" id="sheetStudentNisNisn">- / -</span>
+
+                  <span class="meta-key">ROMBEL / KELAS</span>
+                  <span class="meta-colon">:</span>
+                  <span class="meta-value" id="sheetStudentClass">-</span>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="form-label">Rata-Rata Nilai</label>
-                <div style="font-size: 20px; font-weight: 800; color: var(--primary); padding-top: 6px;" id="gradesAverageBadge">
-                  0.00 (Predikat -)
+
+              <!-- Matrix Table Container -->
+              <div class="table-sheet-scroll">
+                <table class="summary-grade-table" id="summaryGradeTable">
+                  <thead>
+                    <tr>
+                      <th rowspan="2" class="td-subj-no">No.</th>
+                      <th rowspan="2" style="min-width: 240px; text-align: left; padding-left: 10px;">ASPEK PENILAIAN / MATA PELAJARAN</th>
+                      <th colspan="7">NILAI</th>
+                    </tr>
+                    <tr>
+                      <th colspan="2">Kelas VII</th>
+                      <th colspan="2">Kelas VIII</th>
+                      <th colspan="2">Kelas IX</th>
+                      <th rowspan="2" class="th-ijazah-col" style="width: 85px;">IJASAH</th>
+                    </tr>
+                    <tr>
+                      <th colspan="2" style="background: #F1F5F9;">SEMESTER</th>
+                      <th style="width: 62px;">1</th>
+                      <th style="width: 62px;">2</th>
+                      <th style="width: 62px;">1</th>
+                      <th style="width: 62px;">2</th>
+                      <th style="width: 62px;">1</th>
+                      <th style="width: 62px;">2</th>
+                    </tr>
+                  </thead>
+                  <tbody id="summaryGradeTableBody">
+                    <!-- Dynamically rendered via GradesModule.renderSummaryMatrix() -->
+                  </tbody>
+                  <tfoot id="summaryGradeTableFoot">
+                    <!-- Column Totals & Averages -->
+                  </tfoot>
+                </table>
+              </div>
+
+              <!-- Sheet Footer & Signature -->
+              <div class="sheet-footer-wrap">
+                <div class="sheet-kpi-group">
+                  <div class="kpi-sheet-box">
+                    <div class="kpi-title">Rata-Rata Rapor (Sem 1-6)</div>
+                    <div class="kpi-num" id="kpiSheetRaporAvg">0.00</div>
+                  </div>
+                  <div class="kpi-sheet-box" style="border-color: #fde68a; background: #fffbeb;">
+                    <div class="kpi-title" style="color: #b45309;">Nilai Akhir Ijazah</div>
+                    <div class="kpi-num" id="kpiSheetIjazahAvg" style="color: #b45309;">0.00</div>
+                  </div>
+                  <div class="kpi-sheet-box" style="border-color: #bbf7d0; background: #f0fdf4;">
+                    <div class="kpi-title" style="color: #047857;">Predikat Kelulusan</div>
+                    <div class="kpi-num" id="kpiSheetPred" style="color: #047857;">-</div>
+                  </div>
+                </div>
+
+                <div class="sheet-sign-box">
+                  <div>Mengetahui</div>
+                  <div class="sign-head">Kepala Sekolah,</div>
+                  <div class="sign-space"></div>
+                  <div class="sign-person" id="sheetHeadmasterName">Arif Rohman, S.Sos., M.Pd.</div>
+                  <div class="sign-nip" id="sheetHeadmasterNip">NIP. 19750812 200003 1 002</div>
+                </div>
+              </div>
+
+              <!-- Spreadsheet Bottom Bar -->
+              <div class="spreadsheet-bottom-bar">
+                <button class="sheet-tab-icon" title="Tambah Lembar Baru"><i class="fa-solid fa-plus"></i></button>
+                <button class="sheet-tab-icon" title="Menu Lembar Spreadsheet"><i class="fa-solid fa-bars"></i></button>
+                <div class="sheet-tabs-scroll">
+                  <button class="sheet-tab-btn" onclick="App.navigateTo('view-dashboard')">HOME <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn" onclick="App.navigateTo('view-students')">DATA <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn" onclick="App.navigateTo('view-students')">SISWA <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn" onclick="GradesModule.switchTab('single')">MAPEL <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn" onclick="GradesModule.switchTab('classLeger')">LEGER <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn" onclick="PrintEngine.openDirectPrint('cover_buku_induk')">COVER <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn" onclick="PrintEngine.openDirectPrint('biodata_siswa')">ISI <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn" onclick="PrintEngine.openDirectPrint('lembar_pemeriksaan')">PER <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn" onclick="PrintEngine.openDirectPrint('rekap_nisn')">NIS-N <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn" onclick="PrintEngine.openDirectPrint('petunjuk_isi')">PET. <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn" onclick="PrintEngine.openDirectPrint('biodata_siswa')">BIO <i class="fa-solid fa-caret-down"></i></button>
+                  <button class="sheet-tab-btn active" onclick="GradesModule.switchTab('summary')">NILAI <i class="fa-solid fa-caret-down"></i></button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Matrix Table Container -->
-          <div class="app-card" style="padding: 0; overflow: hidden;">
-            <div class="table-container">
-              <table class="matrix-table" id="gradesMatrixTable">
-                <thead>
-                  <tr>
-                    <th style="width: 40px;">No</th>
-                    <th style="width: 100px;">Kode</th>
-                    <th style="text-align: left;">Mata Pelajaran (Kelompok A & B)</th>
-                    <th style="width: 60px;">KKM</th>
-                    <th style="width: 90px;">Pengetahuan</th>
-                    <th style="width: 70px;">Predikat</th>
-                    <th style="width: 90px;">Keterampilan</th>
-                    <th style="width: 70px;">Predikat</th>
-                    <th style="width: 80px;">Sikap</th>
-                    <th style="width: 100px;">Nilai US/Ijazah</th>
-                  </tr>
-                </thead>
-                <tbody id="gradesMatrixBody">
-                  <!-- Dynamic rows -->
-                </tbody>
-              </table>
+          <!-- TAB PANE 2: INPUT DETAIL PER SEMESTER (KI-3, KI-4, SIKAP, EKSKUL) -->
+          <div id="paneGradesSingle" style="display: none;">
+            <!-- Student & Semester Selector Toolbar -->
+            <div class="app-card" style="padding: 16px 20px; margin-bottom: 20px;">
+              <div class="form-grid" style="grid-template-columns: 2fr 1fr 1fr;">
+                <div class="form-group">
+                  <label class="form-label">Pilih Peserta Didik</label>
+                  <select id="gradesStudentSelect" class="form-control" onchange="GradesModule.loadGradesForSelectedStudent()">
+                    <!-- Dynamically populated -->
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Pilih Semester</label>
+                  <select id="gradesSemesterSelect" class="form-control" onchange="GradesModule.renderGradesMatrix()">
+                    <option value="1">Semester 1 (Kls VII Ganjil)</option>
+                    <option value="2">Semester 2 (Kls VII Genap)</option>
+                    <option value="3">Semester 3 (Kls VIII Ganjil)</option>
+                    <option value="4">Semester 4 (Kls VIII Genap)</option>
+                    <option value="5">Semester 5 (Kls IX Ganjil)</option>
+                    <option value="6">Semester 6 (Kls IX Genap)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Rata-Rata Nilai</label>
+                  <div style="font-size: 20px; font-weight: 800; color: var(--primary); padding-top: 6px;" id="gradesAverageBadge">
+                    0.00 (Predikat -)
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Matrix Table Container -->
+            <div class="app-card" style="padding: 0; overflow: hidden; margin-bottom: 20px;">
+              <div class="table-container">
+                <table class="matrix-table" id="gradesMatrixTable">
+                  <thead>
+                    <tr>
+                      <th style="width: 40px;">No</th>
+                      <th style="width: 100px;">Kode</th>
+                      <th style="text-align: left;">Mata Pelajaran (Kelompok A & B)</th>
+                      <th style="width: 60px;">KKM</th>
+                      <th style="width: 90px;">Pengetahuan</th>
+                      <th style="width: 70px;">Predikat</th>
+                      <th style="width: 90px;">Keterampilan</th>
+                      <th style="width: 70px;">Predikat</th>
+                      <th style="width: 80px;">Sikap</th>
+                      <th style="width: 100px;">Nilai US/Ijazah</th>
+                    </tr>
+                  </thead>
+                  <tbody id="gradesMatrixBody">
+                    <!-- Dynamic rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Ekstrakurikuler & Catatan Prestasi -->
+            <div class="app-card">
+              <h3 class="app-card-title" style="margin-bottom: 14px;">Kegiatan Ekstrakurikuler & Pengembangan Diri</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">1. Praja Muda Karana (Pramuka Wajib)</label>
+                  <input type="text" id="formEksPramuka" class="form-control" placeholder="Predikat: Sangat Baik (A), Aktif dalam Jambore">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">2. Tahfidz & Tilawatil Qur'an</label>
+                  <input type="text" id="formEksBtq" class="form-control" placeholder="Predikat: Amat Baik (A), Hafal Juz 30 & 29">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">3. Olahraga / Seni / Bela Diri</label>
+                  <input type="text" id="formEksOlahraga" class="form-control" placeholder="Predikat: Baik (B), Juara 2 Futsal Cup">
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Ekstrakurikuler & Catatan Prestasi -->
-          <div class="app-card">
-            <h3 class="app-card-title" style="margin-bottom: 14px;">Kegiatan Ekstrakurikuler & Pengembangan Diri</h3>
-            <div class="form-grid">
-              <div class="form-group">
-                <label class="form-label">1. Praja Muda Karana (Pramuka Wajib)</label>
-                <input type="text" id="formEksPramuka" class="form-control" placeholder="Predikat: Sangat Baik (A), Aktif dalam Jambore">
+          <!-- TAB PANE 3: REKAP LEGER KELAS MASSAL -->
+          <div id="paneGradesClassLeger" style="display: none;">
+            <div class="app-card" style="padding: 16px 20px; margin-bottom: 20px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                  <div style="min-width: 200px;">
+                    <label class="form-label" style="margin-bottom: 4px; font-size: 11px;">Pilih Kelas / Rombel</label>
+                    <select id="classLegerSelect" class="form-control" onchange="GradesModule.renderClassLeger()">
+                      <option value="VII Utsman">Kelas VII Utsman</option>
+                      <option value="VII Aisyah">Kelas VII Aisyah</option>
+                      <option value="VII MBU">Kelas VII MBU</option>
+                      <option value="VIII Umar">Kelas VIII Umar</option>
+                      <option value="VIII Khodijah">Kelas VIII Khodijah</option>
+                      <option value="IX Abu Bakar">Kelas IX Abu Bakar</option>
+                      <option value="IX Ummu">Kelas IX Ummu</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                  <button class="btn btn-success" onclick="GradesModule.exportClassLegerToExcel()">
+                    <i class="fa-solid fa-file-excel"></i> Ekspor Leger Kelas (.xlsx)
+                  </button>
+                  <button class="btn btn-outline" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> Cetak Leger
+                  </button>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="form-label">2. Tahfidz & Tilawatil Qur'an</label>
-                <input type="text" id="formEksBtq" class="form-control" placeholder="Predikat: Amat Baik (A), Hafal Juz 30 & 29">
-              </div>
-              <div class="form-group">
-                <label class="form-label">3. Olahraga / Seni / Bela Diri</label>
-                <input type="text" id="formEksOlahraga" class="form-control" placeholder="Predikat: Baik (B), Juara 2 Futsal Cup">
+            </div>
+
+            <div class="app-card" style="padding: 0; overflow: hidden;">
+              <div class="table-container">
+                <table class="data-table" id="classLegerTable">
+                  <thead>
+                    <tr>
+                      <th style="width: 40px;">No</th>
+                      <th style="width: 80px;">NIS</th>
+                      <th style="text-align: left;">Nama Siswa</th>
+                      <th style="width: 45px;">JK</th>
+                      <th style="width: 60px;">Sem 1</th>
+                      <th style="width: 60px;">Sem 2</th>
+                      <th style="width: 60px;">Sem 3</th>
+                      <th style="width: 60px;">Sem 4</th>
+                      <th style="width: 60px;">Sem 5</th>
+                      <th style="width: 60px;">Sem 6</th>
+                      <th style="width: 75px; font-weight: bold;">Rata Rapor</th>
+                      <th style="width: 75px; background: #fffbeb; color: #b45309; font-weight: 800;">Nilai Ijazah</th>
+                      <th style="width: 70px;">Predikat</th>
+                      <th style="width: 60px;">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="classLegerBody">
+                    <!-- Dynamically populated -->
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -1040,14 +1281,15 @@
               <div class="form-group">
                 <label class="form-label">Pilih Format Dokumen</label>
                 <select id="printDocTypeSelect" class="form-control" onchange="PrintEngine.renderSelectedDocument()">
-                  <option value="biodata_siswa">1. Lembar Buku Induk Siswa Lengkap (Biodata + Foto 3x4)</option>
-                  <option value="transkrip_nilai">2. Lembar Transkrip Nilai & Rapor K13 (6 Semester)</option>
-                  <option value="lembar_ijazah">3. Lembar Lampiran & Arsip Scan Ijazah Siswa (SD & SMP)</option>
-                  <option value="cetak_ijazah_transkrip">4. Format Cetak Ijazah / Transkrip Kelulusan K13 Resmi</option>
-                  <option value="cover_buku_induk">5. Cover / Sampul Formal Buku Induk Siswa</option>
-                  <option value="petunjuk_isi">6. Petunjuk Pengisian & Lembar Ketentuan</option>
-                  <option value="lembar_pemeriksaan">7. Lembar Pemeriksaan / Audit Buku Induk</option>
-                  <option value="rekap_nisn">8. Rekapitulasi Daftar Siswa & Nomor Induk</option>
+                  <option value="daftar_nilai_rangkuman">1. Lembar Daftar Nilai Rangkuman 6 Semester & Ijazah (Format Resmi)</option>
+                  <option value="biodata_siswa">2. Lembar Buku Induk Siswa Lengkap (Biodata + Foto 3x4)</option>
+                  <option value="transkrip_nilai">3. Lembar Transkrip Nilai & Rapor K13 (6 Semester Detail)</option>
+                  <option value="lembar_ijazah">4. Lembar Lampiran & Arsip Scan Ijazah Siswa (SD & SMP)</option>
+                  <option value="cetak_ijazah_transkrip">5. Format Cetak Ijazah / Transkrip Kelulusan K13 Resmi</option>
+                  <option value="cover_buku_induk">6. Cover / Sampul Formal Buku Induk Siswa</option>
+                  <option value="petunjuk_isi">7. Petunjuk Pengisian & Lembar Ketentuan</option>
+                  <option value="lembar_pemeriksaan">8. Lembar Pemeriksaan / Audit Buku Induk</option>
+                  <option value="rekap_nisn">9. Rekapitulasi Daftar Siswa & Nomor Induk</option>
                 </select>
               </div>
               <div class="form-group" id="printStudentSelectorGroup">
